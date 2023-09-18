@@ -1,25 +1,42 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import callApi from "../../api";
 import { APIS } from "../../utils/constants";
-const { GROUP } = APIS;
+const { GROUP, MEMBERS } = APIS;
 const initialState = {
   activeGroup: "",
+  activeMember: "",
   activeGroupData: {},
+  activeMemberData: {},
   groups: [],
   loading: false,
+  memberLoading: false,
 };
 
 export const fetchGroups = createAsyncThunk(
   "group_slice/fetchGroups",
   async (args) => {
     const { uid } = args;
-    console.log(args)
     try {
       let url = GROUP;
       if (uid) {
         url = `${GROUP}?uid=${uid}`;
       }
       const { status, data } = await callApi(url);
+      if (status) {
+        return data.data;
+      }
+    } catch (error) {
+      console.log(error);
+      throw error; // Propagate the error
+    }
+  }
+);
+export const fetchMembers = createAsyncThunk(
+  "group_slice/fetchMembers",
+  async (args) => {
+    const { id } = args;
+    try {
+      const { status, data } = await callApi(`group/${id}/${MEMBERS}`);
       if (status) {
         return data.data;
       }
@@ -37,6 +54,14 @@ const groupSlice = createSlice({
       state.activeGroup = action.payload;
       if (action.payload) {
         state.activeGroupData = state.groups.find(
+          (g) => g._id === action.payload
+        );
+      }
+    },
+    setActiveMember: (state, action) => {
+      state.activeMember = action.payload;
+      if (action.payload) {
+        state.activeMemberData = state.members.find(
           (g) => g._id === action.payload
         );
       }
@@ -65,11 +90,36 @@ const groupSlice = createSlice({
       .addCase(fetchGroups.rejected, (state, action) => {
         state.loading = false;
         console.error("Error:", action.error.message);
+      })
+      .addCase(fetchMembers.pending, (state) => {
+        state.memberLoading = true;
+        let userData = JSON.parse(localStorage.getItem("userData"));
+        if (Object.keys(state.activeMemberData).length == 0) {
+          state.activeMember = userData["_id"];
+          state.activeMemberData = userData;
+        }
+      })
+      .addCase(fetchMembers.fulfilled, (state, action) => {
+        state.memberLoading = false;
+        const data = action.payload;
+
+        if (data && data.length > 0) {
+          state.members = data.filter(
+            (member) => member._id !== state.activeMemberData["_id"]
+          );
+        } else {
+          // Handle the case where the data is empty or not valid
+          // You can choose to do nothing or set state to a default value
+        }
+      })
+      .addCase(fetchMembers.rejected, (state, action) => {
+        state.memberLoading = false;
+        state.members = [];
       });
   },
 });
 
 export const getGroupData = (state, key) => state.group[key];
-export const { setActiveGroup } = groupSlice.actions;
+export const { setActiveGroup, setActiveMember } = groupSlice.actions;
 
 export default groupSlice.reducer;

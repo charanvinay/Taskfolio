@@ -2,6 +2,7 @@ import { Container, Grid, Hidden } from "@mui/material";
 import React from "react";
 import Tasks from "../../tasks";
 import Groups from "./Groups";
+import Members from "./Members";
 
 const Cards = () => {
   return (
@@ -17,7 +18,9 @@ const Cards = () => {
           <Tasks />
         </Grid>
         <Hidden mdDown>
-          <Grid item lg={3}></Grid>
+          <Grid item lg={3}>
+            <Members />
+          </Grid>
         </Hidden>
       </Grid>
     </Container>

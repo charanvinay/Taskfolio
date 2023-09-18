@@ -2,19 +2,20 @@ import AddIcon from "@mui/icons-material/Add";
 import { Box, Fab, Paper, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import AddTask from "../../components/dialogs/AddTask";
 import { getGroupData, setActiveGroup } from "../../redux/slices/groupSlice";
 import { fetchTasks, getTaskData } from "../../redux/slices/taskSlice";
 import { getUserData } from "../../redux/slices/userSlice";
 import { COLORS, TASKTYPECOLORS } from "../../utils/constants";
 import TaskSkeleton from "../../utils/skeletons/Task";
-import AddTask from "../../components/dialogs/AddTask";
-import Storage from "../../utils/localStore"
 const Tasks = () => {
   const [openAddTask, setOpenAddTask] = useState(false);
-  const userData = Storage.getJson("userData")
   const activeDate = useSelector((state) => getUserData(state, "activeDate"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
+  );
+  const activeMember = useSelector((state) =>
+    getGroupData(state, "activeMember")
   );
   const activeGroupData = useSelector((state) =>
     getGroupData(state, "activeGroupData")
@@ -23,10 +24,16 @@ const Tasks = () => {
   const loading = useSelector((state) => getTaskData(state, "loading"));
   const dispatch = useDispatch();
   useEffect(() => {
-    if (activeGroup) {
-      dispatch(fetchTasks({ activeDate, activeGroup, uid: userData["_id"] }));
+    if (activeGroup && activeMember) {
+      dispatch(
+        fetchTasks({
+          activeDate,
+          activeGroup,
+          uid: activeMember,
+        })
+      );
     }
-  }, [activeDate, activeGroup]);
+  }, [activeDate, activeGroup, activeMember]);
 
   return (
     <>
@@ -120,15 +127,17 @@ const Tasks = () => {
       >
         <AddIcon />
       </Fab>
-      {openAddTask && <AddTask
-        open={openAddTask}
-        onClose={(e) => {
-          setOpenAddTask(false);
-          if (e && e.openGroup) {
-            dispatch(setActiveGroup(e.openGroup))
-          }
-        }}
-      />}
+      {openAddTask && (
+        <AddTask
+          open={openAddTask}
+          onClose={(e) => {
+            setOpenAddTask(false);
+            if (e && e.openGroup) {
+              dispatch(setActiveGroup(e.openGroup));
+            }
+          }}
+        />
+      )}
     </>
   );
 };

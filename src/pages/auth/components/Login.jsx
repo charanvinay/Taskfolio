@@ -19,8 +19,8 @@ import ErrorAlert from "../../../components/snackbars/ErrorAlert";
 import PrimaryButton from "../../../components/wrappers/PrimaryButton";
 import { getAuthData, login } from "../../../redux/slices/authSlice";
 import { COLORS } from "../../../utils/constants";
+import Storage from "../../../utils/localStore";
 import Loader from "../../dashboard/components/Loader";
-import Storage from "../../../utils/localStore"
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();

@@ -1,5 +1,5 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import "./App.css";
 import Auth from "./pages/auth";

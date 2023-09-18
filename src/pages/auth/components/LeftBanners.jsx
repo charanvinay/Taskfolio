@@ -2,10 +2,9 @@ import { Box, Grid, Hidden } from "@mui/material";
 import React from "react";
 import { COLORS } from "../../../utils/constants";
 
-import login from "../../../Assets/login.png";
-import logoblue from "../../../Assets/logobluesm.png";
 import dotsb from "../../../Assets/dotsb.png";
 import dotscross from "../../../Assets/dotscross.png";
+import login from "../../../Assets/login.png";
 
 const LeftBanners = () => {
   return (

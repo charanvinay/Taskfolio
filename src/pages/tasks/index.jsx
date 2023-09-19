@@ -61,7 +61,7 @@ const Tasks = () => {
         </Stack>
         <Stack spacing={2}>
           {loading
-            ? [1, 2, 3, 4].map((loader) => (
+            ? [1, 2, 3, 4, 5, 6].map((loader) => (
                 <div key={loader}>
                   <TaskSkeleton key={loader} />
                 </div>

@@ -121,6 +121,7 @@ const taskSlice = createSlice({
         }
       });
     },
+    resetTask: (state) => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -171,5 +172,5 @@ const taskSlice = createSlice({
 });
 
 export const getTaskData = (state, key) => state.task[key];
-export const { handleTask } = taskSlice.actions;
+export const { handleTask, resetTask } = taskSlice.actions;
 export default taskSlice.reducer;

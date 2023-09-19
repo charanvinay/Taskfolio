@@ -28,8 +28,6 @@ const Login = () => {
 
   const initialValues = { email: "", password: "" };
   const [showPass, setShowPass] = useState(false);
-  const [isSubmit, setIsSubmit] = useState(false);
-  const [formErrors, setformErrors] = useState({});
   const [errorText, setErrorText] = useState(false);
   const [snackopen, setsnackOpen] = useState(false);
   const [formValues, setformValues] = useState(initialValues);
@@ -48,13 +46,10 @@ const Login = () => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    setformErrors(handleValidation(formValues));
-    console.log(handleValidation(formValues));
     if (Object.values(handleValidation(formValues)).length !== 0) {
       setErrorText(Object.values(handleValidation(formValues))[0]);
       setsnackOpen(true);
     } else {
-      setIsSubmit(true);
       dispatch(login(formValues));
       //   navigate(`/`);
     }
@@ -82,12 +77,6 @@ const Login = () => {
     }
     return errors;
   };
-
-  useEffect(() => {
-    if (Object.keys(formErrors).length === 0 && isSubmit) {
-      // navigate("/changepassword");
-    }
-  }, [formErrors]);
 
   useEffect(() => {
     if (error) {
@@ -161,7 +150,7 @@ const Login = () => {
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton onClick={() => setShowPass(!showPass)} edge="end">
-                    {showPass ? (
+                    {!showPass ? (
                       <VisibilityOffOutlined />
                     ) : (
                       <RemoveRedEyeOutlined />

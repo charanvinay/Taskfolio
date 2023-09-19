@@ -66,6 +66,7 @@ const groupSlice = createSlice({
         );
       }
     },
+    resetGroup: (state) => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -94,19 +95,26 @@ const groupSlice = createSlice({
       .addCase(fetchMembers.pending, (state) => {
         state.memberLoading = true;
         let userData = JSON.parse(localStorage.getItem("userData"));
-        if (Object.keys(state.activeMemberData).length == 0) {
-          state.activeMember = userData["_id"];
-          state.activeMemberData = userData;
-        }
+        state.activeMember = userData["_id"];
+        state.activeMemberData = userData;
       })
       .addCase(fetchMembers.fulfilled, (state, action) => {
         state.memberLoading = false;
         const data = action.payload;
-
+        let userData = JSON.parse(localStorage.getItem("userData"));
         if (data && data.length > 0) {
-          state.members = data.filter(
-            (member) => member._id !== state.activeMemberData["_id"]
+          const userDataIndex = data.findIndex(
+            (member) => member._id === userData["_id"]
           );
+
+          // If userData is found, splice it from the array and add it as the first item
+          if (userDataIndex !== -1) {
+            const userData = data.splice(userDataIndex, 1)[0];
+            state.members = [userData, ...data];
+          } else {
+            // If userData is not found, just assign the data as is
+            state.members = data;
+          }
         } else {
           // Handle the case where the data is empty or not valid
           // You can choose to do nothing or set state to a default value
@@ -120,6 +128,7 @@ const groupSlice = createSlice({
 });
 
 export const getGroupData = (state, key) => state.group[key];
-export const { setActiveGroup, setActiveMember } = groupSlice.actions;
+export const { setActiveGroup, setActiveMember, resetGroup } =
+  groupSlice.actions;
 
 export default groupSlice.reducer;

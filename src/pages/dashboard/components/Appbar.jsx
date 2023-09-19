@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import Storage from "../../../utils/localStore"
+import { resetAll } from "../../../redux/slices/rootReducer";
 
 const SETTINGS = [
   { id: "profile", label: "Profile" },
@@ -34,6 +35,7 @@ function DashboardAppbar() {
     setAnchorElUser(null);
     if(id === "logout"){
       dispatch(logout())
+      dispatch(resetAll());
       navigate("/")
     }
   };

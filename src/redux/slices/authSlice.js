@@ -38,7 +38,8 @@ const authSlice = createSlice({
         state.userData = {}
         Storage.remove("token");
         Storage.remove("userData");
-    }
+    }, 
+    resetAuth: (state) => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -59,5 +60,5 @@ const authSlice = createSlice({
   },
 });
 export const getAuthData = (state, key) => state.auth[key];
-export const {logout} = authSlice.actions;
+export const {logout, resetAuth} = authSlice.actions;
 export default authSlice.reducer;

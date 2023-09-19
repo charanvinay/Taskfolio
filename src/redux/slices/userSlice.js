@@ -17,9 +17,10 @@ export const userSlice = createSlice({
     setIsDarkMode: (state, action) => {
       state.isDarkMode = action.payload;
     },
+    resetUser: (state) => initialState,
   },
 });
 
 export const getUserData = (state, key) => state.user[key];
-export const { setIsMobile, setIsDarkMode, setActiveDate } = userSlice.actions;
+export const { setIsMobile, setIsDarkMode, setActiveDate, resetUser } = userSlice.actions;
 export default userSlice.reducer;

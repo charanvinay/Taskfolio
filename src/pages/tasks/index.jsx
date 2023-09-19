@@ -61,13 +61,13 @@ const Tasks = () => {
               }}
             ></Box>
           )}
-          <Box
+          {activeMember && <Box
             sx={{
               width: "20px",
               height: "2px",
               backgroundColor: COLORS["PRIMARY"],
             }}
-          ></Box>
+          ></Box>}
         </Stack>
         <Stack spacing={2}>
           {loading

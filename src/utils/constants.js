@@ -44,4 +44,35 @@ export const TASKTYPES = [
   { id: "code_optimization", label: "Code Optimization" },
 ];
 
+export const getRandomColor = () => `#${Math.floor(Math.random()*16777215).toString(16)}`;
+
+export const DARKCOLORS = {
+  a: '#303F9F', // Dark blue
+  b: '#512DA8', // Dark purple
+  c: '#00796B', // Dark red
+  d: '#D32F2F', // Dark blue
+  e: '#512DA8', // Dark purple
+  f: '#E64A19', // Dark orange
+  g: '#8E24AA', // Dark purple
+  h: '#FF6F00', // Dark orange
+  i: '#AFB42B', // Dark yellow
+  j: '#FFD600', // Dark yellow
+  k: '#1976D2', // Dark teal
+  l: '#388E3C', // Dark green
+  m: '#FFA000', // Dark orange
+  n: '#F57C00', // Dark orange
+  o: '#FF7043', // Dark orange
+  p: '#607D8B', // Dark gray
+  q: '#795548', // Dark brown
+  r: '#C2185B', // Dark pink
+  s: '#689F38', // Dark green
+  t: '#8BC34A', // Dark green
+  u: '#3949AB', // Dark blue
+  v: '#FF5252', // Dark red
+  w: '#546E7A', // Dark gray
+  x: '#C51162', // Dark pink
+  y: '#009688', // Dark teal
+  z: '#0288D1', // Dark blue
+};
+
 export const { BASE_URL, DUMMY_AVATAR_URL } = constants;

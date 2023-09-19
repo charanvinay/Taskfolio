@@ -1,20 +1,22 @@
 import {
-    Divider,
-    List,
-    ListItemButton,
-    ListItemText,
-    Paper,
-    Skeleton,
-    Typography,
+  Avatar,
+  Divider,
+  List,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  Paper,
+  Skeleton,
+  Typography,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-    fetchMembers,
-    getGroupData,
-    setActiveMember
+  fetchMembers,
+  getGroupData,
+  setActiveMember,
 } from "../../../redux/slices/groupSlice";
-import { COLORS } from "../../../utils/constants";
+import { COLORS, DARKCOLORS, getRandomColor } from "../../../utils/constants";
 const Members = () => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => getGroupData(state, "memberLoading"));
@@ -77,13 +79,34 @@ const Members = () => {
             {members &&
               members.map((member, ind) => {
                 const { _id, fullName, email } = member;
+                const selected = _id === activeMember;
                 return (
                   <div key={ind}>
                     <ListItemButton
                       onClick={() => dispatch(setActiveMember(_id))}
-                      selected={_id === activeMember}
+                      selected={selected}
+                      sx={{
+                        padding: "5px 10px",
+                      }}
                     >
-                      <ListItemText primary={fullName} secondary={email} />
+                      <ListItemAvatar>
+                        <Avatar sx={{bgcolor: DARKCOLORS[fullName[0].toLowerCase()]}}>
+                          {fullName[0]}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={fullName}
+                        secondary={email}
+                        primaryTypographyProps={{
+                          fontWeight: selected && "500",
+                          letterSpacing: 0,
+                          color: selected && COLORS["PRIMARY"],
+                          textTransform: "capitalize"
+                        }}
+                        secondaryTypographyProps={{
+                          fontSize: "12px !important",
+                        }}
+                      />
                     </ListItemButton>
                     {members.length - 1 !== ind && <Divider />}
                   </div>

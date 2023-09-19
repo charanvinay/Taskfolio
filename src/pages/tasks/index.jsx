@@ -6,8 +6,9 @@ import AddTask from "../../components/dialogs/AddTask";
 import { getGroupData, setActiveGroup } from "../../redux/slices/groupSlice";
 import { fetchTasks, getTaskData } from "../../redux/slices/taskSlice";
 import { getUserData } from "../../redux/slices/userSlice";
-import { COLORS, TASKTYPECOLORS } from "../../utils/constants";
+import { COLORS, TASKTYPECOLORS, TASKTYPES } from "../../utils/constants";
 import TaskSkeleton from "../../utils/skeletons/Task";
+import Storage from "../../utils/localStore";
 const Tasks = () => {
   const [openAddTask, setOpenAddTask] = useState(false);
   const activeDate = useSelector((state) => getUserData(state, "activeDate"));
@@ -20,6 +21,10 @@ const Tasks = () => {
   const activeGroupData = useSelector((state) =>
     getGroupData(state, "activeGroupData")
   );
+  const activeMemberData = useSelector((state) =>
+    getGroupData(state, "activeMemberData")
+  );
+  const isLoggedUser = Storage.getJson("userData")?._id === activeMember;
   const tasks = useSelector((state) => getTaskData(state, "tasks"));
   const loading = useSelector((state) => getTaskData(state, "loading"));
   const dispatch = useDispatch();
@@ -39,18 +44,23 @@ const Tasks = () => {
     <>
       <Stack spacing={2} sx={{ my: "10px" }}>
         <Stack>
-          <Typography variant="body1" sx={{ fontWeight: "600" }}>
-            Your tasks{" "}
-            {activeGroupData["_id"] && `in ${activeGroupData["title"]}`}
+          <Typography
+            variant="body1"
+            sx={{ fontWeight: "600", textTransform: "capitalize" }}
+          >
+            {isLoggedUser ? "My" : activeMemberData["fullName"]}
+            {activeGroupData["_id"] && ` tasks in ${activeGroupData["title"]}`}
           </Typography>
-          <Box
-            sx={{
-              width: "40px",
-              height: "2px",
-              backgroundColor: COLORS["PRIMARY"],
-              mb: "2px",
-            }}
-          ></Box>
+          {activeMember && (
+            <Box
+              sx={{
+                width: "40px",
+                height: "2px",
+                backgroundColor: COLORS["PRIMARY"],
+                mb: "2px",
+              }}
+            ></Box>
+          )}
           <Box
             sx={{
               width: "20px",
@@ -104,7 +114,8 @@ const Tasks = () => {
                             letterSpacing: 1.2,
                           }}
                         >
-                          {task.type}
+                          {TASKTYPES.find((t) => t.id === task.type)?.label ||
+                            task.type}
                         </Typography>
                       </Stack>
                     </Stack>

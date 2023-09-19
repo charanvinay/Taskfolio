@@ -63,7 +63,7 @@ const Groups = () => {
           [1, 2].map((loader) => (
             <Skeleton
               animation="wave"
-              height={50}
+              height={40}
               variant="rectangular"
               sx={{ width: "100%", mb: 1 }}
               key={loader}
@@ -74,13 +74,23 @@ const Groups = () => {
             {groups &&
               groups.map((group, ind) => {
                 const { _id, title } = group;
+                const selected = _id === activeGroup;
                 return (
                   <div key={_id}>
                     <ListItemButton
                       onClick={() => dispatch(setActiveGroup(_id))}
-                      selected={_id === activeGroup}
+                      selected={selected}
+                      sx={{
+                        padding: "5px 10px",
+                      }}
                     >
-                      <ListItemText primary={title} />
+                      <ListItemText
+                        primary={title}
+                        primaryTypographyProps={{
+                          fontWeight: selected && "500",
+                          color: selected && COLORS["PRIMARY"],
+                        }}
+                      />
                     </ListItemButton>
                     {groups.length - 1 !== ind && <Divider />}
                   </div>

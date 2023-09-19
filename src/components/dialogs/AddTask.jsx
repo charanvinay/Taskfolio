@@ -16,7 +16,7 @@ import Slide from "@mui/material/Slide";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getGroupData } from "../../redux/slices/groupSlice";
+import { getGroupData, setActiveMember } from "../../redux/slices/groupSlice";
 import {
   addTask,
   fetchFormNames,
@@ -29,7 +29,7 @@ import ErrorAlert from "../snackbars/ErrorAlert";
 import SuccessAlert from "../snackbars/SuccessAlert";
 import PrimaryButton from "../wrappers/PrimaryButton";
 import SecondaryButton from "../wrappers/SecondaryButton";
-import Storage from "../../utils/localStore"
+import Storage from "../../utils/localStore";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -38,7 +38,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function AddTask(props) {
   const { open, onClose } = props;
   const dispatch = useDispatch();
-  const userData = Storage.getJson("userData")
+  const userData = Storage.getJson("userData");
   const [alertText, setAlertText] = useState("");
   const [errorAlert, setErrorAlert] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
@@ -96,6 +96,7 @@ export default function AddTask(props) {
         payload[field.name] = field.value;
       });
       dispatch(addTask({ payload }));
+      dispatch(setActiveMember(userData["_id"]));
       onClose({ openGroup: payload["groupId"] });
     } else {
       setErrorAlert(true);

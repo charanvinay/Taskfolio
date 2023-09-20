@@ -17,12 +17,12 @@ const Cards = () => {
           </Grid>
         </Hidden>
         <Hidden mdUp>
-          <Grid item xs={13} md={6}>
+          <Grid item xs={6} sm={6} md={6}>
             <GroupsSM />
           </Grid>
         </Hidden>
         <Hidden mdUp>
-          <Grid item xs={13} md={6}>
+          <Grid item xs={6} sm={6} md={6}>
             <MembersSM />
           </Grid>
         </Hidden>

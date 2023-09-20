@@ -9,6 +9,7 @@ import { getUserData } from "../../redux/slices/userSlice";
 import { COLORS, TASKTYPECOLORS, TASKTYPES } from "../../utils/constants";
 import TaskSkeleton from "../../utils/skeletons/Task";
 import Storage from "../../utils/localStore";
+import NotFound from "../../components/PageNotFound";
 const Tasks = () => {
   const [openAddTask, setOpenAddTask] = useState(false);
   const activeDate = useSelector((state) => getUserData(state, "activeDate"));
@@ -61,13 +62,15 @@ const Tasks = () => {
               }}
             ></Box>
           )}
-          {activeMember && <Box
-            sx={{
-              width: "20px",
-              height: "2px",
-              backgroundColor: COLORS["PRIMARY"],
-            }}
-          ></Box>}
+          {activeMember && (
+            <Box
+              sx={{
+                width: "20px",
+                height: "2px",
+                backgroundColor: COLORS["PRIMARY"],
+              }}
+            ></Box>
+          )}
         </Stack>
         <Stack spacing={2}>
           {loading
@@ -124,6 +127,18 @@ const Tasks = () => {
               })}
         </Stack>
       </Stack>
+      {!activeGroup && (
+        <NotFound
+          text1="No groups found"
+          text2="Create a group and add your tasks"
+        />
+      )}
+      {(!tasks || tasks.length == 0) && (
+        <NotFound
+          text1="No tasks found"
+          text2="Click on + button to create task"
+        />
+      )}
       <Fab
         color="primary"
         aria-label="add"

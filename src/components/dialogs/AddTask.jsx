@@ -109,11 +109,12 @@ export default function AddTask(props) {
         open={open}
         TransitionComponent={Transition}
         keepMounted
+        disableEscapeKeyDown
         scroll="paper"
         fullWidth={true}
         fullScreen={isTabletOrMobile}
         maxWidth={"md"}
-        onClose={onClose}
+        // onClose={onClose}
       >
         <DialogTitle>
           Create a task on{" "}

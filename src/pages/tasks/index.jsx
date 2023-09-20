@@ -133,26 +133,28 @@ const Tasks = () => {
           text2="Create a group and add your tasks"
         />
       )}
-      {(!tasks || tasks.length == 0) && (
+      {(!tasks || tasks.length === 0) && (
         <NotFound
           text1="No tasks found"
           text2="Click on + button to create task"
         />
       )}
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{
-          position: "fixed",
-          bottom: 16,
-          right: 16,
-        }}
-        onClick={() => {
-          setOpenAddTask(true);
-        }}
-      >
-        <AddIcon />
-      </Fab>
+      {activeGroup && (
+        <Fab
+          color="primary"
+          aria-label="add"
+          sx={{
+            position: "fixed",
+            bottom: 16,
+            right: 16,
+          }}
+          onClick={() => {
+            setOpenAddTask(true);
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      )}
       {openAddTask && (
         <AddTask
           open={openAddTask}

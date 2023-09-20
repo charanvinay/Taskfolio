@@ -1,5 +1,6 @@
 const constants = {
   BASE_URL: "http://localhost:3001/api/v1/",
+  DEBOUNCE_DELAY: 300,
   DUMMY_AVATAR_URL:
     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fFBFUlNPTnxlbnwwfDF8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
 };
@@ -75,4 +76,4 @@ export const DARKCOLORS = {
   z: '#0288D1', // Dark blue
 };
 
-export const { BASE_URL, DUMMY_AVATAR_URL } = constants;
+export const { BASE_URL, DEBOUNCE_DELAY, DUMMY_AVATAR_URL } = constants;

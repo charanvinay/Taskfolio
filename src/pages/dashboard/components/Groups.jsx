@@ -1,14 +1,20 @@
+import AddIcon from "@mui/icons-material/Add";
+import LoginIcon from "@mui/icons-material/Login";
 import {
+  Box,
   Divider,
   List,
   ListItemButton,
   ListItemText,
   Paper,
   Skeleton,
+  Stack,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import JoinGroup from "../../../components/dialogs/JoinGroup";
+import PrimaryButton from "../../../components/wrappers/PrimaryButton";
 import {
   fetchGroups,
   getGroupData,
@@ -19,6 +25,7 @@ import Storage from "../../../utils/localStore";
 const Groups = () => {
   const dispatch = useDispatch();
   const userData = Storage.getJson("userData");
+  const [openJoinGroup, setOpenJoinGroup] = useState(false);
   const loading = useSelector((state) => getGroupData(state, "loading"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
@@ -71,7 +78,7 @@ const Groups = () => {
           ))
         ) : (
           <>
-            {groups &&
+            {groups && groups.length > 0 ? (
               groups.map((group, ind) => {
                 const { _id, title } = group;
                 const selected = _id === activeGroup;
@@ -95,10 +102,48 @@ const Groups = () => {
                     {groups.length - 1 !== ind && <Divider />}
                   </div>
                 );
-              })}
+              })
+            ) : (
+              <Box
+                sx={{
+                  height: "40px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography variant="body2">No groups found</Typography>
+              </Box>
+            )}
+            <Stack spacing={2} direction="row" sx={{ mt: 2 }}>
+              <PrimaryButton
+                variant="contained"
+                fullWidth
+                sx={{ minWidth: 0 }}
+                startIcon={<AddIcon />}
+              >
+                Create
+              </PrimaryButton>
+              <PrimaryButton
+                variant="contained"
+                fullWidth
+                sx={{ minWidth: 0 }}
+                startIcon={<LoginIcon />}
+                onClick={() => setOpenJoinGroup(true)}
+              >
+                Join
+              </PrimaryButton>
+            </Stack>
           </>
         )}
       </List>
+      {openJoinGroup && (
+        <JoinGroup
+          open={openJoinGroup}
+          onClose={() => setOpenJoinGroup(false)}
+        />
+      )}
     </Paper>
   );
 };

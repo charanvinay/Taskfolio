@@ -46,6 +46,30 @@ export const fetchMembers = createAsyncThunk(
     }
   }
 );
+export const joinGroup = createAsyncThunk(
+  "group_slice/joinGroup",
+  async (args, { rejectWithValue, dispatch }) => {
+    let { id, uid } = args;
+    let payload = { members: [uid] };
+    try {
+      const { status, data } = await callApi(`${GROUP}/${id}`, "PUT", payload);
+      if (status) {
+        dispatch(fetchGroups({ uid }));
+        return {
+          status,
+          message: data.message,
+        };
+      }
+      return rejectWithValue({
+        status,
+        message: data.message,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
 const groupSlice = createSlice({
   name: "group_slice",
   initialState: initialState,
@@ -123,6 +147,15 @@ const groupSlice = createSlice({
       .addCase(fetchMembers.rejected, (state, action) => {
         state.memberLoading = false;
         state.members = [];
+      })
+      .addCase(joinGroup.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(joinGroup.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(joinGroup.rejected, (state, action) => {
+        state.loading = false;
       });
   },
 });

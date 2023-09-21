@@ -1,27 +1,43 @@
+import { PersonRemoveOutlined } from "@mui/icons-material";
+import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import {
   Avatar,
   Divider,
+  IconButton,
   List,
+  ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
   Paper,
   Skeleton,
+  Tooltip,
   Typography,
+  useTheme,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import AddMember from "../../../components/dialogs/AddMember";
+import PrimaryButton from "../../../components/wrappers/PrimaryButton";
 import {
   fetchMembers,
   getGroupData,
+  removeMember,
   setActiveMember,
 } from "../../../redux/slices/groupSlice";
-import { COLORS, DARKCOLORS, getRandomColor } from "../../../utils/constants";
+import { COLORS, DARKCOLORS } from "../../../utils/constants";
+import Storage from "../../../utils/localStore";
 const Members = () => {
   const dispatch = useDispatch();
+  const theme = useTheme()
+  const [addMember, setAddMember] = useState(false);
+  const userData = Storage.getJson("userData");
   const loading = useSelector((state) => getGroupData(state, "memberLoading"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
+  );
+  const activeGroupData = useSelector((state) =>
+    getGroupData(state, "activeGroupData")
   );
   const activeMember = useSelector((state) =>
     getGroupData(state, "activeMember")
@@ -29,11 +45,11 @@ const Members = () => {
   const members = useSelector((state) => getGroupData(state, "members"));
 
   useEffect(() => {
-    if (activeGroup) {
+    if (activeGroup && activeGroupData) {
       dispatch(fetchMembers({ id: activeGroup }));
     }
-  }, [activeGroup]);
-
+  }, [activeGroup, activeGroupData]);
+  const isAdmin = userData["_id"] === activeGroupData["createdBy"];
   return (
     <>
       {members && members.length > 0 && (
@@ -49,8 +65,6 @@ const Members = () => {
         >
           <List
             sx={{ width: "100%" }}
-            component="nav"
-            aria-labelledby="nested-list-subheader"
             subheader={
               <Typography
                 variant="subtitle2"
@@ -62,7 +76,7 @@ const Members = () => {
                   color: COLORS["PRIMARY"],
                 }}
               >
-                Members
+                Members ({members.length})
               </Typography>
             }
           >
@@ -83,10 +97,37 @@ const Members = () => {
                     const { _id, fullName, email } = member;
                     const selected = _id === activeMember;
                     return (
-                      <div key={ind}>
+                      <ListItem
+                        key={ind}
+                        disablePadding
+                        secondaryAction={
+                          isAdmin &&
+                          _id !== userData["_id"] && (
+                            <Tooltip title="Remove">
+                              <IconButton
+                                edge="end"
+                                sx={{
+                                  backgroundColor: theme.palette.background.default,
+                                  color: COLORS["PRIMARY"],
+                                }}
+                                onClick={() =>
+                                  dispatch(
+                                    removeMember({
+                                      id: activeGroup,
+                                      uid: _id,
+                                    })
+                                  )
+                                }
+                              >
+                                <PersonRemoveOutlined />
+                              </IconButton>
+                            </Tooltip>
+                          )
+                        }
+                      >
                         <ListItemButton
                           onClick={() => dispatch(setActiveMember(_id))}
-                          selected={selected}
+                          // selected={selected}
                           sx={{
                             padding: "5px 10px",
                           }}
@@ -103,6 +144,14 @@ const Members = () => {
                           <ListItemText
                             primary={fullName}
                             secondary={email}
+                            sx={{
+                              "& .MuiTypography-root": {
+                                noWrap: true,
+                                overflow: "hidden",
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                              },
+                            }}
                             primaryTypographyProps={{
                               fontWeight: selected && "500",
                               letterSpacing: 0,
@@ -110,18 +159,32 @@ const Members = () => {
                               textTransform: "capitalize",
                             }}
                             secondaryTypographyProps={{
-                              fontSize: "12px !important",
+                              fontSize: "13px !important",
                             }}
                           />
                         </ListItemButton>
                         {members.length - 1 !== ind && <Divider />}
-                      </div>
+                      </ListItem>
                     );
                   })}
               </>
             )}
+            {isAdmin && (
+              <PrimaryButton
+                variant="contained"
+                fullWidth
+                sx={{ minWidth: 0, mt: 1 }}
+                onClick={() => setAddMember(true)}
+                startIcon={<PersonAddOutlinedIcon />}
+              >
+                Add member
+              </PrimaryButton>
+            )}
           </List>
         </Paper>
+      )}
+      {addMember && (
+        <AddMember open={addMember} onClose={() => setAddMember(false)} />
       )}
     </>
   );

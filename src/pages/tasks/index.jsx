@@ -46,8 +46,8 @@ const Tasks = () => {
       <Stack spacing={2} sx={{ my: "10px" }}>
         <Stack>
           <Typography
-            variant="body1"
-            sx={{ fontWeight: "600", textTransform: "capitalize" }}
+            variant="subtitle2"
+            sx={{ fontWeight: "500",textTransform: "capitalize" }}
           >
             {isLoggedUser ? "My" : activeMemberData["fullName"]}
             {activeGroupData["_id"] && ` tasks in ${activeGroupData["title"]}`}

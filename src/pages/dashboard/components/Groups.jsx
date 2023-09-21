@@ -16,9 +16,9 @@ import { useDispatch, useSelector } from "react-redux";
 import JoinGroup from "../../../components/dialogs/JoinGroup";
 import PrimaryButton from "../../../components/wrappers/PrimaryButton";
 import {
+  fetchGroupDetails,
   fetchGroups,
-  getGroupData,
-  setActiveGroup,
+  getGroupData
 } from "../../../redux/slices/groupSlice";
 import { COLORS } from "../../../utils/constants";
 import Storage from "../../../utils/localStore";
@@ -85,7 +85,7 @@ const Groups = () => {
                 return (
                   <div key={_id}>
                     <ListItemButton
-                      onClick={() => dispatch(setActiveGroup(_id))}
+                      onClick={() => dispatch(fetchGroupDetails({ id: _id }))}
                       selected={selected}
                       sx={{
                         padding: "5px 10px",
@@ -93,6 +93,14 @@ const Groups = () => {
                     >
                       <ListItemText
                         primary={title}
+                        sx={{
+                          "& .MuiTypography-root": {
+                            noWrap: true,
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                          },
+                        }}
                         primaryTypographyProps={{
                           fontWeight: selected && "500",
                           color: selected && COLORS["PRIMARY"],

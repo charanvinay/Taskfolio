@@ -1,10 +1,16 @@
-import { Autocomplete, Skeleton, Stack, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Skeleton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  fetchGroupDetails,
   fetchGroups,
-  getGroupData,
-  setActiveGroup,
+  getGroupData
 } from "../../../redux/slices/groupSlice";
 import Storage from "../../../utils/localStore";
 const GroupsSM = () => {
@@ -40,7 +46,7 @@ const GroupsSM = () => {
           onChange={(e, inpVal) => {
             let val = inpVal;
             val = groups.find((g) => g.title === inpVal)?._id;
-            dispatch(setActiveGroup(val));
+            dispatch(fetchGroupDetails({ id: val }));
           }}
         />
       )}

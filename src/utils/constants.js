@@ -10,15 +10,15 @@ export const APIS = {
   TASK: "task",
   GET_FORMNAMES: "task/getFormNames",
   LOGIN: "user/login",
-  USER_DETAILS: "user/getUserDetails",
+  USER: "user",
   MEMBERS: "members",
 };
-export const COLORS = { PRIMARY: "#0045f6" };
+export const COLORS = { PRIMARY: "#0045f6", BG: "#EDF2F8" };
 
 export const THEME_VALUES = {
   PALETTE_PRIMARY_MAIN: { light: COLORS["PRIMARY"], dark: COLORS["PRIMARY"] },
   PALETTE_SECONDARY_MAIN: { light: "#ffa500", dark: "#e4e4ec" },
-  PALETTE_BACKGROUND_DEFAULT: { light: "#EDF2F8", dark: "#1A1A1A" },
+  PALETTE_BACKGROUND_DEFAULT: { light: COLORS["BG"], dark: "#1A1A1A" },
   PALETTE_PAPER_DEFAULT: { light: "#FFF", dark: "#282828" },
   CARD_BOXSHADOW: {
     light: "0px 1px 8px rgb(23 110 222 / 10%)",

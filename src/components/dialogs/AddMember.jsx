@@ -30,6 +30,7 @@ import {
 import Storage from "../../utils/localStore";
 import PrimaryButton from "../wrappers/PrimaryButton";
 import SecondaryButton from "../wrappers/SecondaryButton";
+import ErrorAlert from "../snackbars/ErrorAlert";
 const { USER } = APIS;
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -40,6 +41,8 @@ export default function AddMember(props) {
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [alertText, setAlertText] = useState("")
+  const [errorAlert, setErrorAlert] = useState(false)
   const [searchValue, setSearchValue] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -47,7 +50,6 @@ export default function AddMember(props) {
   const activeGroupData = useSelector((state) =>
     getGroupData(state, "activeGroupData")
   );
-  console.log(activeGroupData);
   const isTabletOrMobile = useMediaQuery((theme) =>
     theme.breakpoints.down("sm")
   );
@@ -91,8 +93,13 @@ export default function AddMember(props) {
   };
 
   const submit = () => {
-    dispatch(joinGroup({ id: activeGroupData["_id"], uid: selectedUser }));
-    onClose();
+    if(selectedUser){
+      dispatch(joinGroup({ id: activeGroupData["_id"], uid: selectedUser }));
+      onClose();
+    } else{
+      setErrorAlert(true)
+      setAlertText("Select a user to add")
+    }
   };
   return (
     <>
@@ -204,6 +211,11 @@ export default function AddMember(props) {
           </PrimaryButton>
         </DialogActions>
       </Dialog>
+      <ErrorAlert
+        open={errorAlert}
+        text={alertText}
+        onClose={() => setErrorAlert(false)}
+      />
     </>
   );
 }

@@ -13,12 +13,13 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import CreateGroup from "../../../components/dialogs/CreateGroup";
 import JoinGroup from "../../../components/dialogs/JoinGroup";
 import PrimaryButton from "../../../components/wrappers/PrimaryButton";
 import {
   fetchGroupDetails,
   fetchGroups,
-  getGroupData
+  getGroupData,
 } from "../../../redux/slices/groupSlice";
 import { COLORS } from "../../../utils/constants";
 import Storage from "../../../utils/localStore";
@@ -26,6 +27,7 @@ const Groups = () => {
   const dispatch = useDispatch();
   const userData = Storage.getJson("userData");
   const [openJoinGroup, setOpenJoinGroup] = useState(false);
+  const [openCreateGroup, setOpenCreateGroup] = useState(false);
   const loading = useSelector((state) => getGroupData(state, "loading"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
@@ -130,6 +132,7 @@ const Groups = () => {
                 fullWidth
                 sx={{ minWidth: 0 }}
                 startIcon={<AddIcon />}
+                onClick={() => setOpenCreateGroup(true)}
               >
                 Create
               </PrimaryButton>
@@ -150,6 +153,12 @@ const Groups = () => {
         <JoinGroup
           open={openJoinGroup}
           onClose={() => setOpenJoinGroup(false)}
+        />
+      )}
+      {openCreateGroup && (
+        <CreateGroup
+          open={openCreateGroup}
+          onClose={() => setOpenCreateGroup(false)}
         />
       )}
     </Paper>

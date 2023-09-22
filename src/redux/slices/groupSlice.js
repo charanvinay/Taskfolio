@@ -90,6 +90,30 @@ export const joinGroup = createAsyncThunk(
     }
   }
 );
+export const createGroup = createAsyncThunk(
+  "group_slice/createGroup",
+  async (args, { rejectWithValue, dispatch }) => {
+    let { payload } = args;
+    try {
+      const { status, data } = await callApi(`${GROUP}`, "POST", payload);
+      if (status) {
+        dispatch(fetchGroups({ id: payload["createdBy"] }));
+        return {
+          status,
+          data: data["data"],
+          message: data.message,
+        };
+      }
+      return rejectWithValue({
+        status,
+        message: data.message,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
 export const removeMember = createAsyncThunk(
   "group_slice/removeMember",
   async (args, { rejectWithValue, dispatch }) => {

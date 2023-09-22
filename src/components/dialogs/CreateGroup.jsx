@@ -146,6 +146,7 @@ export default function CreateGroup(props) {
             getOptionLabel={(option) => option.fullName}
             filterSelectedOptions
             value={formValues.members}
+            disableCloseOnSelect
             onChange={(e, val) => {
               handleChange("members", val);
             }}

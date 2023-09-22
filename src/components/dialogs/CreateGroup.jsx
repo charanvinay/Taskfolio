@@ -1,6 +1,7 @@
 import {
   Autocomplete,
   Avatar,
+  CircularProgress,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -38,7 +39,6 @@ export default function CreateGroup(props) {
   const initialValues = { title: "", members: [] };
   const [formValues, setFormValues] = useState(initialValues);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState(null);
 
   const userData = Storage.getJson("userData");
   const isTabletOrMobile = useMediaQuery((theme) =>
@@ -47,6 +47,7 @@ export default function CreateGroup(props) {
   let debounceTimer;
 
   useEffect(() => {
+    setLoading(true);
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
@@ -141,6 +142,7 @@ export default function CreateGroup(props) {
           <Autocomplete
             multiple
             options={users}
+            loading={loading}
             getOptionLabel={(option) => option.fullName}
             filterSelectedOptions
             value={formValues.members}
@@ -164,10 +166,22 @@ export default function CreateGroup(props) {
                 />
               </ListItem>
             )}
+            noOptionsText="No users found"
             renderInput={(params) => (
               <TextField
                 {...params}
                 placeholder="Search users by name"
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {loading ? (
+                        <CircularProgress color="inherit" size={20} />
+                      ) : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                }}
                 onChange={(e) => setSearchValue(e.target.value)}
               />
             )}

@@ -52,7 +52,6 @@ const Groups = () => {
       <List
         sx={{ width: "100%" }}
         component="nav"
-        aria-labelledby="nested-list-subheader"
         subheader={
           <Typography
             variant="subtitle2"
@@ -81,38 +80,40 @@ const Groups = () => {
         ) : (
           <>
             {groups && groups.length > 0 ? (
-              groups.map((group, ind) => {
-                const { _id, title } = group;
-                const selected = _id === activeGroup;
-                return (
-                  <div key={_id}>
-                    <ListItemButton
-                      onClick={() => dispatch(fetchGroupDetails({ id: _id }))}
-                      selected={selected}
-                      sx={{
-                        padding: "5px 10px",
-                      }}
-                    >
-                      <ListItemText
-                        primary={title}
+              <Box sx={{ maxHeight: "calc(100vh - 350px)", overflowY: "scroll" }}>
+                {groups.map((group, ind) => {
+                  const { _id, title } = group;
+                  const selected = _id === activeGroup;
+                  return (
+                    <div key={_id}>
+                      <ListItemButton
+                        onClick={() => dispatch(fetchGroupDetails({ id: _id }))}
+                        selected={selected}
                         sx={{
-                          "& .MuiTypography-root": {
-                            noWrap: true,
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            textOverflow: "ellipsis",
-                          },
+                          padding: "5px 10px",
                         }}
-                        primaryTypographyProps={{
-                          fontWeight: selected && "500",
-                          color: selected && COLORS["PRIMARY"],
-                        }}
-                      />
-                    </ListItemButton>
-                    {groups.length - 1 !== ind && <Divider />}
-                  </div>
-                );
-              })
+                      >
+                        <ListItemText
+                          primary={title}
+                          sx={{
+                            "& .MuiTypography-root": {
+                              noWrap: true,
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                            },
+                          }}
+                          primaryTypographyProps={{
+                            fontWeight: selected && "500",
+                            color: selected && COLORS["PRIMARY"],
+                          }}
+                        />
+                      </ListItemButton>
+                      {groups.length - 1 !== ind && <Divider />}
+                    </div>
+                  );
+                })}
+              </Box>
             ) : (
               <Box
                 sx={{

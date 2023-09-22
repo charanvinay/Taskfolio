@@ -2,6 +2,7 @@ import { PersonRemoveOutlined } from "@mui/icons-material";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import {
   Avatar,
+  Box,
   Divider,
   IconButton,
   List,
@@ -91,7 +92,7 @@ const Members = () => {
                 />
               ))
             ) : (
-              <>
+              <Box sx={{ maxHeight: "calc(100vh - 350px)", overflowY: "scroll" }}>
                 {members &&
                   members.map((member, ind) => {
                     const { _id, fullName, email } = member;
@@ -167,7 +168,7 @@ const Members = () => {
                       </ListItem>
                     );
                   })}
-              </>
+              </Box>
             )}
             {isAdmin && (
               <PrimaryButton

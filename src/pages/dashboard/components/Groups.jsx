@@ -4,6 +4,7 @@ import {
   Box,
   Divider,
   List,
+  ListItem,
   ListItemButton,
   ListItemText,
   Paper,
@@ -12,13 +13,16 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
+import ListSecondaryAction from "../../../components/ListSecondaryAction";
+import CreateGroup from "../../../components/dialogs/CreateGroup";
 import JoinGroup from "../../../components/dialogs/JoinGroup";
 import PrimaryButton from "../../../components/wrappers/PrimaryButton";
 import {
+  fetchGroupDetails,
   fetchGroups,
   getGroupData,
-  setActiveGroup,
 } from "../../../redux/slices/groupSlice";
 import { COLORS } from "../../../utils/constants";
 import Storage from "../../../utils/localStore";
@@ -26,15 +30,21 @@ const Groups = () => {
   const dispatch = useDispatch();
   const userData = Storage.getJson("userData");
   const [openJoinGroup, setOpenJoinGroup] = useState(false);
+  const [mode, setMode] = useState("add");
+  const [openCreateGroup, setOpenCreateGroup] = useState(false);
   const loading = useSelector((state) => getGroupData(state, "loading"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
+  );
+  const activeGroupData = useSelector((state) =>
+    getGroupData(state, "activeGroupData")
   );
   const groups = useSelector((state) => getGroupData(state, "groups"));
 
   useEffect(() => {
     dispatch(fetchGroups({ uid: userData["_id"] }));
   }, []);
+  const isAdmin = userData["_id"] === activeGroupData["createdBy"];
 
   return (
     <Paper
@@ -50,7 +60,6 @@ const Groups = () => {
       <List
         sx={{ width: "100%" }}
         component="nav"
-        aria-labelledby="nested-list-subheader"
         subheader={
           <Typography
             variant="subtitle2"
@@ -79,30 +88,58 @@ const Groups = () => {
         ) : (
           <>
             {groups && groups.length > 0 ? (
-              groups.map((group, ind) => {
-                const { _id, title } = group;
-                const selected = _id === activeGroup;
-                return (
-                  <div key={_id}>
-                    <ListItemButton
-                      onClick={() => dispatch(setActiveGroup(_id))}
-                      selected={selected}
-                      sx={{
-                        padding: "5px 10px",
-                      }}
+              <Box
+                sx={{ maxHeight: "calc(100vh - 350px)", overflowY: "scroll" }}
+              >
+                {groups.map((group, ind) => {
+                  const { _id, title } = group;
+                  const selected = _id === activeGroup;
+                  return (
+                    <ListItem
+                      key={_id}
+                      disablePadding
+                      secondaryAction={
+                        selected &&
+                        isAdmin && (
+                          <ListSecondaryAction
+                            tooltip="Edit"
+                            onClick={() => {
+                              setOpenCreateGroup(true);
+                              setMode("edit");
+                            }}
+                            icon={<FaRegEdit size={18} />}
+                          />
+                        )
+                      }
                     >
-                      <ListItemText
-                        primary={title}
-                        primaryTypographyProps={{
-                          fontWeight: selected && "500",
-                          color: selected && COLORS["PRIMARY"],
+                      <ListItemButton
+                        onClick={() => dispatch(fetchGroupDetails({ id: _id }))}
+                        selected={selected}
+                        sx={{
+                          padding: "5px 10px",
                         }}
-                      />
-                    </ListItemButton>
-                    {groups.length - 1 !== ind && <Divider />}
-                  </div>
-                );
-              })
+                      >
+                        <ListItemText
+                          primary={title}
+                          sx={{
+                            "& .MuiTypography-root": {
+                              noWrap: true,
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                            },
+                          }}
+                          primaryTypographyProps={{
+                            fontWeight: selected && "500",
+                            color: selected && COLORS["PRIMARY"],
+                          }}
+                        />
+                      </ListItemButton>
+                      {groups.length - 1 !== ind && <Divider />}
+                    </ListItem>
+                  );
+                })}
+              </Box>
             ) : (
               <Box
                 sx={{
@@ -122,6 +159,10 @@ const Groups = () => {
                 fullWidth
                 sx={{ minWidth: 0 }}
                 startIcon={<AddIcon />}
+                onClick={() => {
+                  setMode("add");
+                  setOpenCreateGroup(true);
+                }}
               >
                 Create
               </PrimaryButton>
@@ -142,6 +183,14 @@ const Groups = () => {
         <JoinGroup
           open={openJoinGroup}
           onClose={() => setOpenJoinGroup(false)}
+        />
+      )}
+      {openCreateGroup && (
+        <CreateGroup
+          open={openCreateGroup}
+          mode={mode}
+          groupId={mode === "edit" && activeGroup}
+          onClose={() => setOpenCreateGroup(false)}
         />
       )}
     </Paper>

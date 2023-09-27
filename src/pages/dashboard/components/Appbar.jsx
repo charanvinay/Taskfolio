@@ -9,7 +9,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import React, { useState } from "react";
-import { DUMMY_AVATAR_URL } from "../../../utils/constants";
+import { COLORS, DUMMY_AVATAR_URL } from "../../../utils/constants";
 import HorizontalCalendar from "./HorizontalCalender";
 import { useDispatch } from "react-redux";
 import { logout } from "../../../redux/slices/authSlice";
@@ -41,7 +41,7 @@ function DashboardAppbar() {
   };
 
   return (
-    <AppBar position="sticky" elevation={0}>
+    <AppBar position="sticky" elevation={0} sx={{backgroundColor: COLORS["PRIMARY"]}}>
       <Container>
         <Toolbar disableGutters>
           <Typography

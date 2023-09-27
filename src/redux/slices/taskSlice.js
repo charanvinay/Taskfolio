@@ -1,6 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import callApi from "../../api";
-import { APIS, TASKTYPES } from "../../utils/constants";
+import {
+  APIS,
+  TASKTYPECOLORS,
+  TASKTYPES,
+  TASK_STATUSES,
+  TASK_STATUS_COLORS,
+} from "../../utils/constants";
 const { TASK, GET_FORMNAMES } = APIS;
 const initialState = {
   tasks: [],
@@ -33,6 +39,16 @@ const initialState = {
       element: "radio",
       value: TASKTYPES[0]["id"],
       options: TASKTYPES,
+      colors: TASKTYPECOLORS,
+    },
+    {
+      id: 5,
+      name: "status",
+      label: "Status",
+      element: "radio",
+      value: TASK_STATUSES[0]["id"],
+      options: TASK_STATUSES,
+      colors: TASK_STATUS_COLORS,
     },
     {
       id: 4,
@@ -46,19 +62,23 @@ const initialState = {
   ],
   error: false,
   message: "",
+  selectedStatus: ""
 };
 export const fetchTasks = createAsyncThunk(
   "task_slice/fetchTasks",
   async (args) => {
-    let { activeDate, activeGroup, uid } = args;
+    let { activeDate, activeGroup, uid, selectedStatus } = args;
     try {
       let url = `${TASK}?groupId=${activeGroup}&date=${activeDate}`;
-      if(uid){
+      if (uid) {
         url += `&createdBy=${uid}`;
+      }
+      if (selectedStatus) {
+        url += `&status=${selectedStatus}`;
       }
       const { status, data } = await callApi(url);
       if (status) {
-        return data["data"];
+        return { tasks: data["data"], selectedStatus };
       }
     } catch (error) {
       console.log(error);
@@ -93,6 +113,7 @@ export const addTask = createAsyncThunk(
           fetchTasks({
             activeDate: payload["date"],
             activeGroup: payload["groupId"],
+            selectedStatus: payload["status"],
           })
         );
         return {
@@ -121,6 +142,9 @@ const taskSlice = createSlice({
         }
       });
     },
+    setSelectedStatus: (state, action) => {
+      state.selectedStatus = action.payload
+    },
     resetTask: (state) => initialState,
   },
   extraReducers: (builder) => {
@@ -130,7 +154,8 @@ const taskSlice = createSlice({
       })
       .addCase(fetchTasks.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks = action.payload;
+        state.tasks = action.payload.tasks;
+        state.selectedStatus = action.payload.selectedStatus;
         state.formSchema = initialState.formSchema;
         state.message = "";
       })
@@ -172,5 +197,5 @@ const taskSlice = createSlice({
 });
 
 export const getTaskData = (state, key) => state.task[key];
-export const { handleTask, resetTask } = taskSlice.actions;
+export const { handleTask, setSelectedStatus, resetTask } = taskSlice.actions;
 export default taskSlice.reducer;

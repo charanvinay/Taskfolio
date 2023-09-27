@@ -135,6 +135,7 @@ export default function AddTask(props) {
                   multiline,
                   freeSolo,
                   placeholder,
+                  colors,
                 } = field;
                 if (element === "input") {
                   return (
@@ -206,9 +207,7 @@ export default function AddTask(props) {
                                 fontWeight: "500",
                                 color: value === id && "white",
                                 backgroundColor:
-                                  value === id
-                                    ? TASKTYPECOLORS[id]
-                                    : "transparent",
+                                  value === id ? colors[id] : "transparent",
                               }}
                             />
                           );

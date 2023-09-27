@@ -11,15 +11,15 @@
 
 
 /* Hide the scrollbar */
-.calendar-container::-webkit-scrollbar {
+.hide-scrollbar-x::-webkit-scrollbar {
   width: 0.5rem; /* Adjust as needed */
 }
 
-.calendar-container::-webkit-scrollbar-track {
+.hide-scrollbar-x::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.calendar-container::-webkit-scrollbar-thumb {
+.hide-scrollbar-x::-webkit-scrollbar-thumb {
   background: transparent;
   border: none;
   display: none;

@@ -84,7 +84,7 @@ const HorizontalCalendar = () => {
   const filledArray = new Array(30).fill(0).map((_, index) => index + 1);
 
   return (
-    <Box className="calendar-container">
+    <Box className="calendar-container hide-scrollbar-x">
       {loading ? (
         filledArray.map((_, i) => {
           return (

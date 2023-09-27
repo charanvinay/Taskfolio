@@ -12,7 +12,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import ListSecondaryAction from "../../../components/ListSecondaryAction";
@@ -28,6 +28,7 @@ import { COLORS } from "../../../utils/constants";
 import Storage from "../../../utils/localStore";
 const Groups = () => {
   const dispatch = useDispatch();
+  const activeRef = useRef(null);
   const userData = Storage.getJson("userData");
   const [openJoinGroup, setOpenJoinGroup] = useState(false);
   const [mode, setMode] = useState("add");
@@ -44,8 +45,16 @@ const Groups = () => {
   useEffect(() => {
     dispatch(fetchGroups({ uid: userData["_id"] }));
   }, []);
-  const isAdmin = userData["_id"] === activeGroupData["createdBy"];
+  useEffect(() => {
+    if (activeRef && activeRef.current) {
+      activeRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [activeGroup, loading]);
 
+  const isAdmin = userData["_id"] === activeGroupData["createdBy"];
   return (
     <Paper
       sx={{
@@ -113,6 +122,7 @@ const Groups = () => {
                       }
                     >
                       <ListItemButton
+                        ref={selected ? activeRef : null}
                         onClick={() => dispatch(fetchGroupDetails({ id: _id }))}
                         selected={selected}
                         sx={{
@@ -189,6 +199,7 @@ const Groups = () => {
         <CreateGroup
           open={openCreateGroup}
           mode={mode}
+          isAdmin={isAdmin}
           groupId={mode === "edit" && activeGroup}
           onClose={() => setOpenCreateGroup(false)}
         />

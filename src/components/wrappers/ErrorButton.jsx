@@ -2,8 +2,8 @@ import { Button } from '@mui/material';
 import { styled } from '@mui/system';
 import { COLORS } from '../../utils/constants';
 
-const PrimaryButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
+const ErrorButton = styled(Button)(({ theme }) => ({
+  backgroundColor: theme.palette.error.main,
   textTransform: "none",
   borderRadius: 10,
   letterSpacing: 0,
@@ -14,4 +14,4 @@ const PrimaryButton = styled(Button)(({ theme }) => ({
   fontSize: "14px"
 }));
 
-export default PrimaryButton;
+export default ErrorButton;

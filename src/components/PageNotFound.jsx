@@ -10,7 +10,7 @@ const NotFound = ({text1, text2}) => {
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        height: "50vh",
+        height: "45vh",
         alignItems: "center",
         justifyContent: "center",
       }}

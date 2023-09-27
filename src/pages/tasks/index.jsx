@@ -1,15 +1,35 @@
+import { ContentCopyOutlined } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
-import { Box, Fab, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Chip,
+  Fab,
+  IconButton,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import NotFound from "../../components/PageNotFound";
 import AddTask from "../../components/dialogs/AddTask";
 import { getGroupData, setActiveGroup } from "../../redux/slices/groupSlice";
-import { fetchTasks, getTaskData } from "../../redux/slices/taskSlice";
+import {
+  fetchTasks,
+  getTaskData,
+  setSelectedStatus,
+} from "../../redux/slices/taskSlice";
 import { getUserData } from "../../redux/slices/userSlice";
-import { COLORS, TASKTYPECOLORS, TASKTYPES } from "../../utils/constants";
-import TaskSkeleton from "../../utils/skeletons/Task";
+import {
+  COLORS,
+  TASKTYPECOLORS,
+  TASKTYPES,
+  TASK_STATUSES,
+  TASK_STATUS_COLORS,
+} from "../../utils/constants";
 import Storage from "../../utils/localStore";
-import NotFound from "../../components/PageNotFound";
+import TaskSkeleton from "../../utils/skeletons/Task";
 const Tasks = () => {
   const [openAddTask, setOpenAddTask] = useState(false);
   const activeDate = useSelector((state) => getUserData(state, "activeDate"));
@@ -28,48 +48,92 @@ const Tasks = () => {
   const isLoggedUser = Storage.getJson("userData")?._id === activeMember;
   const tasks = useSelector((state) => getTaskData(state, "tasks"));
   const loading = useSelector((state) => getTaskData(state, "loading"));
+  const selectedStatus = useSelector((state) =>
+    getTaskData(state, "selectedStatus")
+  );
   const dispatch = useDispatch();
   useEffect(() => {
-    if (activeGroup && activeMember) {
+    if (
+      activeGroup &&
+      activeMember &&
+      (selectedStatus || selectedStatus === "")
+    ) {
       dispatch(
         fetchTasks({
           activeDate,
           activeGroup,
           uid: activeMember,
+          selectedStatus,
         })
       );
     }
-  }, [activeDate, activeGroup, activeMember]);
-
+  }, [activeDate, activeGroup, activeMember, selectedStatus]);
+  const statuses = [
+    { id: "", label: "All", color: COLORS["PRIMARY"] },
+    ...TASK_STATUSES,
+  ];
   return (
     <>
-      <Stack spacing={2} sx={{ my: "10px" }}>
+      <Stack sx={{ mb: 4 }}>
         <Stack>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "500",textTransform: "capitalize" }}
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
           >
-            {isLoggedUser ? "My" : activeMemberData["fullName"]}
-            {activeGroupData["_id"] && ` tasks in ${activeGroupData["title"]}`}
-          </Typography>
+            <Typography
+              variant="subtitle2"
+              sx={{ fontWeight: "500", textTransform: "capitalize" }}
+            >
+              {isLoggedUser ? "My" : activeMemberData["fullName"]}
+              {activeGroupData["_id"] &&
+                ` tasks in ${activeGroupData["title"]}`}
+            </Typography>
+            <IconButton>
+              <ContentCopyOutlined sx={{ fontSize: "18px" }} />
+            </IconButton>
+          </Stack>
           {activeMember && (
-            <Box
-              sx={{
-                width: "40px",
-                height: "2px",
-                backgroundColor: COLORS["PRIMARY"],
-                mb: "2px",
-              }}
-            ></Box>
-          )}
-          {activeMember && (
-            <Box
-              sx={{
-                width: "20px",
-                height: "2px",
-                backgroundColor: COLORS["PRIMARY"],
-              }}
-            ></Box>
+            <>
+              <Box
+                sx={{
+                  width: "40px",
+                  height: "2px",
+                  backgroundColor: COLORS["PRIMARY"],
+                  mb: "2px",
+                }}
+              ></Box>
+              <Box
+                sx={{
+                  width: "20px",
+                  height: "2px",
+                  backgroundColor: COLORS["PRIMARY"],
+                }}
+              ></Box>
+              <Stack
+                direction="row"
+                className="hide-scrollbar-x"
+                spacing={1}
+                sx={{ overflowX: "scroll", mt: 1 }}
+              >
+                {statuses.map((status) => {
+                  const selected = status.id === selectedStatus;
+                  return (
+                    <Chip
+                      label={status.label}
+                      clickable={false}
+                      variant={!selected ? "outlined" : "filled"}
+                      onClick={() => dispatch(setSelectedStatus(status.id))}
+                      sx={{
+                        cursor: "pointer",
+                        backgroundColor: selected && status.color,
+                        color: selected && "white",
+                      }}
+                    />
+                  );
+                })}
+              </Stack>
+            </>
           )}
         </Stack>
         <Stack spacing={2}>
@@ -86,19 +150,31 @@ const Tasks = () => {
                   <Paper
                     key={task._id}
                     sx={{
-                      borderLeft: `6px solid ${TASKTYPECOLORS[task.type]}`,
+                      borderLeft: `6px solid ${
+                        TASK_STATUS_COLORS[task.status] || COLORS["PRIMARY"]
+                      }`,
                       padding: 2,
                     }}
                   >
-                    <Typography variant="subtitle2">{task.title}</Typography>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                    >
+                      <Typography variant="subtitle2">{task.title}</Typography>
+                      <IconButton size="small">
+                        <ContentCopyOutlined fontSize="14px" />
+                      </IconButton>
+                    </Stack>
                     <Stack
                       direction="row"
                       justifyContent="space-between"
                       alignItems="center"
-                      sx={{ mt: "8px" }}
+                      sx={{ mt: "4px" }}
                     >
                       <Typography variant="caption">
-                        In {task.formName}
+                        In {task.formName} @{" "}
+                        {moment(task.createdAt).format("hh:mm a")}
                       </Typography>
                       <Stack direction="row" alignItems="center" spacing={1}>
                         <Box

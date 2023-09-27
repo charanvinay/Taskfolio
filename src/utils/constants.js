@@ -1,3 +1,4 @@
+console.log(process.env.REACT_APP_BACKEND_URL);
 const constants = {
   BASE_URL: process.env.REACT_APP_BACKEND_URL,
   DEBOUNCE_DELAY: 300,

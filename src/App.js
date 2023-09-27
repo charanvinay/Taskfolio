@@ -8,8 +8,6 @@ import { getTheme } from "./theme";
 import Storage from "./utils/localStore";
 
 function App() {
-  console.log(process.env.REACT_APP_BACKEND_URL);
-
   const isLoggedIn = Storage.get("token");
   const navigate = useNavigate();
   const theme = useMemo(() => getTheme("light"), []);

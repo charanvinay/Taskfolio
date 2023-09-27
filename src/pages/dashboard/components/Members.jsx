@@ -28,9 +28,10 @@ import {
 } from "../../../redux/slices/groupSlice";
 import { COLORS, DARKCOLORS } from "../../../utils/constants";
 import Storage from "../../../utils/localStore";
+import ListSecondaryAction from "../../../components/ListSecondaryAction";
 const Members = () => {
   const dispatch = useDispatch();
-  const theme = useTheme()
+  const theme = useTheme();
   const [addMember, setAddMember] = useState(false);
   const userData = Storage.getJson("userData");
   const loading = useSelector((state) => getGroupData(state, "memberLoading"));
@@ -92,7 +93,9 @@ const Members = () => {
                 />
               ))
             ) : (
-              <Box sx={{ maxHeight: "calc(100vh - 350px)", overflowY: "scroll" }}>
+              <Box
+                sx={{ maxHeight: "calc(100vh - 350px)", overflowY: "scroll" }}
+              >
                 {members &&
                   members.map((member, ind) => {
                     const { _id, fullName, email } = member;
@@ -104,25 +107,18 @@ const Members = () => {
                         secondaryAction={
                           isAdmin &&
                           _id !== userData["_id"] && (
-                            <Tooltip title="Remove">
-                              <IconButton
-                                edge="end"
-                                sx={{
-                                  backgroundColor: theme.palette.background.default,
-                                  color: COLORS["PRIMARY"],
-                                }}
-                                onClick={() =>
-                                  dispatch(
-                                    removeMember({
-                                      id: activeGroup,
-                                      uid: _id,
-                                    })
-                                  )
-                                }
-                              >
-                                <PersonRemoveOutlined />
-                              </IconButton>
-                            </Tooltip>
+                            <ListSecondaryAction
+                              tooltip="Remove"
+                              onClick={() => {
+                                dispatch(
+                                  removeMember({
+                                    id: activeGroup,
+                                    uid: _id,
+                                  })
+                                );
+                              }}
+                              icon={<PersonRemoveOutlined />}
+                            />
                           )
                         }
                       >

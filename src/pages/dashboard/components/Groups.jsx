@@ -4,6 +4,7 @@ import {
   Box,
   Divider,
   List,
+  ListItem,
   ListItemButton,
   ListItemText,
   Paper,
@@ -12,7 +13,9 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
+import ListSecondaryAction from "../../../components/ListSecondaryAction";
 import CreateGroup from "../../../components/dialogs/CreateGroup";
 import JoinGroup from "../../../components/dialogs/JoinGroup";
 import PrimaryButton from "../../../components/wrappers/PrimaryButton";
@@ -27,16 +30,21 @@ const Groups = () => {
   const dispatch = useDispatch();
   const userData = Storage.getJson("userData");
   const [openJoinGroup, setOpenJoinGroup] = useState(false);
+  const [mode, setMode] = useState("add");
   const [openCreateGroup, setOpenCreateGroup] = useState(false);
   const loading = useSelector((state) => getGroupData(state, "loading"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
+  );
+  const activeGroupData = useSelector((state) =>
+    getGroupData(state, "activeGroupData")
   );
   const groups = useSelector((state) => getGroupData(state, "groups"));
 
   useEffect(() => {
     dispatch(fetchGroups({ uid: userData["_id"] }));
   }, []);
+  const isAdmin = userData["_id"] === activeGroupData["createdBy"];
 
   return (
     <Paper
@@ -80,12 +88,30 @@ const Groups = () => {
         ) : (
           <>
             {groups && groups.length > 0 ? (
-              <Box sx={{ maxHeight: "calc(100vh - 350px)", overflowY: "scroll" }}>
+              <Box
+                sx={{ maxHeight: "calc(100vh - 350px)", overflowY: "scroll" }}
+              >
                 {groups.map((group, ind) => {
                   const { _id, title } = group;
                   const selected = _id === activeGroup;
                   return (
-                    <div key={_id}>
+                    <ListItem
+                      key={_id}
+                      disablePadding
+                      secondaryAction={
+                        selected &&
+                        isAdmin && (
+                          <ListSecondaryAction
+                            tooltip="Edit"
+                            onClick={() => {
+                              setOpenCreateGroup(true);
+                              setMode("edit");
+                            }}
+                            icon={<FaRegEdit size={18} />}
+                          />
+                        )
+                      }
+                    >
                       <ListItemButton
                         onClick={() => dispatch(fetchGroupDetails({ id: _id }))}
                         selected={selected}
@@ -110,7 +136,7 @@ const Groups = () => {
                         />
                       </ListItemButton>
                       {groups.length - 1 !== ind && <Divider />}
-                    </div>
+                    </ListItem>
                   );
                 })}
               </Box>
@@ -133,7 +159,10 @@ const Groups = () => {
                 fullWidth
                 sx={{ minWidth: 0 }}
                 startIcon={<AddIcon />}
-                onClick={() => setOpenCreateGroup(true)}
+                onClick={() => {
+                  setMode("add");
+                  setOpenCreateGroup(true);
+                }}
               >
                 Create
               </PrimaryButton>
@@ -159,6 +188,8 @@ const Groups = () => {
       {openCreateGroup && (
         <CreateGroup
           open={openCreateGroup}
+          mode={mode}
+          groupId={mode === "edit" && activeGroup}
           onClose={() => setOpenCreateGroup(false)}
         />
       )}

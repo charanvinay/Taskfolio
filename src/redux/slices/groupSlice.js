@@ -14,8 +14,8 @@ const initialState = {
 
 export const fetchGroups = createAsyncThunk(
   "group_slice/fetchGroups",
-  async (args, { dispatch }) => {
-    const { uid } = args;
+  async (args = { uid: "", active: "" }, { dispatch }) => {
+    const { uid, active } = args;
     try {
       let url = GROUP;
       if (uid) {
@@ -27,7 +27,7 @@ export const fetchGroups = createAsyncThunk(
         if (groups.length === 1) {
           dispatch(fetchGroupDetails({ id: groups[0]["_id"] }));
         }
-        return groups;
+        return { active, groups };
       }
     } catch (error) {
       console.log(error);
@@ -97,7 +97,39 @@ export const createGroup = createAsyncThunk(
     try {
       const { status, data } = await callApi(`${GROUP}`, "POST", payload);
       if (status) {
-        dispatch(fetchGroups({ id: payload["createdBy"] }));
+        dispatch(
+          fetchGroups({ uid: payload["createdBy"], active: data["data"]["_id"] })
+        );
+        return {
+          status,
+          data: data["data"],
+          message: data.message,
+        };
+      }
+      return rejectWithValue({
+        status,
+        message: data.message,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+export const updateGroup = createAsyncThunk(
+  "group_slice/updateGroup",
+  async (args, { rejectWithValue, dispatch }) => {
+    let { payload } = args;
+    try {
+      const { status, data } = await callApi(
+        `${GROUP}/${payload["_id"]}`,
+        "PUT",
+        payload
+      );
+      if (status) {
+        dispatch(
+          fetchGroups({ id: payload["createdBy"], active: payload["_id"] })
+        );
         return {
           status,
           data: data["data"],
@@ -121,7 +153,7 @@ export const removeMember = createAsyncThunk(
     try {
       const { status, data } = await callApi(`${GROUP}/${id}/${uid}`, "DELETE");
       if (status) {
-        dispatch(fetchGroupDetails({id}))
+        dispatch(fetchGroupDetails({ id }));
         return {
           status,
           data: data["data"],
@@ -167,12 +199,15 @@ const groupSlice = createSlice({
       })
       .addCase(fetchGroups.fulfilled, (state, action) => {
         state.loading = false;
-        const data = action.payload;
-
-        if (data && data.length > 0) {
-          state.groups = data;
-          if(data.length > 1) {
-            let firstGroup = data[0];
+        const { groups, active } = action.payload;
+        if (groups && groups.length > 0) {
+          state.groups = groups;
+          if (active) {
+            let firstGroup = groups.find((g) => g._id === active);
+            state.activeGroup = active;
+            state.activeGroupData = firstGroup;
+          } else if (groups.length > 1) {
+            let firstGroup = groups[0];
             state.activeGroup = firstGroup._id;
             state.activeGroupData = firstGroup;
           }
@@ -240,7 +275,7 @@ const groupSlice = createSlice({
       })
       .addCase(joinGroup.rejected, (state, action) => {
         // state.loading = false;
-      })
+      });
   },
 });
 

@@ -16,9 +16,14 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import callApi from "../../api";
-import { createGroup } from "../../redux/slices/groupSlice";
+import {
+  createGroup,
+  fetchGroupDetails,
+  getGroupData,
+  updateGroup,
+} from "../../redux/slices/groupSlice";
 import { APIS, DARKCOLORS, DEBOUNCE_DELAY } from "../../utils/constants";
 import Storage from "../../utils/localStore";
 import ErrorAlert from "../snackbars/ErrorAlert";
@@ -30,7 +35,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function CreateGroup(props) {
-  const { open, onClose } = props;
+  const { open, onClose, mode, groupId } = props;
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,12 +44,16 @@ export default function CreateGroup(props) {
   const initialValues = { title: "", members: [] };
   const [formValues, setFormValues] = useState(initialValues);
   const [searchValue, setSearchValue] = useState("");
-
+  const isEditMode = mode === "edit";
   const userData = Storage.getJson("userData");
   const isTabletOrMobile = useMediaQuery((theme) =>
     theme.breakpoints.down("sm")
   );
   let debounceTimer;
+
+  const activeGroupData = useSelector((state) =>
+    getGroupData(state, "activeGroupData")
+  );
 
   useEffect(() => {
     setLoading(true);
@@ -61,6 +70,55 @@ export default function CreateGroup(props) {
     };
   }, [searchValue]);
 
+  useEffect(() => {
+    setLoading(true);
+    if(groupId){
+      dispatch(fetchGroupDetails({ id: groupId })).then((res) => {
+        if (res && res.payload && Object.keys(res.payload).length) {
+          let { title, members } = res.payload;
+          if (title) {
+            handleChange({ title });
+          }
+          if (members && members.length) {
+            const fetchMemberInfo = async () => {
+              const updatedMembers = await Promise.all(
+                members.map(async (memberId) => {
+                  const memberInfo = await API_fetchUsersById(memberId); // Replace with your API call
+                  return memberInfo;
+                })
+              );
+              handleChange({ members: updatedMembers });
+            };
+  
+            fetchMemberInfo();
+          }
+        }
+      });
+    }
+    setLoading(false);
+  }, [groupId]);
+
+  const API_fetchUsersById = async (id) => {
+    let url = USER;
+    if (id) {
+      url = `${USER}/${id}`;
+      try {
+        const { status, data } = await callApi(url);
+        if (status) {
+          let res = {
+            _id: data.data._id,
+            fullName: data.data.fullName,
+            email: data.data.email,
+          };
+          return res;
+        }
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    }
+  };
   const API_fetchUsers = async (name) => {
     let url = USER;
     if (name) {
@@ -86,8 +144,10 @@ export default function CreateGroup(props) {
     }
   };
 
-  const handleChange = (name, value) => {
-    setFormValues({ ...formValues, [name]: value });
+  const handleChange = (values) => {
+    setFormValues((prev) => {
+      return { ...prev, ...values };
+    });
   };
   const validation = () => {
     if (!formValues.title) {
@@ -108,8 +168,19 @@ export default function CreateGroup(props) {
           ...formValues.members.map((member) => member._id),
         ],
       };
-      dispatch(createGroup({ payload }));
-      onClose();
+      if (isEditMode) {
+        if (groupId) {
+          payload["_id"] = groupId;
+          dispatch(updateGroup({ payload }));
+          onClose();
+        } else {
+          setErrorAlert(true);
+          setAlertText("Please pass group id");
+        }
+      } else {
+        dispatch(createGroup({ payload }));
+        onClose();
+      }
     } else {
       setErrorAlert(true);
       setAlertText(message);
@@ -127,14 +198,14 @@ export default function CreateGroup(props) {
         fullScreen={isTabletOrMobile}
         // onClose={onClose}
       >
-        <DialogTitle>Create a group</DialogTitle>
+        <DialogTitle>{`${isEditMode ? "Edit" : "Create"} group`}</DialogTitle>
         <DialogContent dividers={true} sx={{ pb: 4 }}>
           <Typography variant="subtitle2">Title</Typography>
           <OutlinedInput
             fullWidth
             placeholder="Enter group title"
             value={formValues.title}
-            onChange={(e) => handleChange("title", e.target.value)}
+            onChange={(e) => handleChange({ title: e.target.value })}
           />
           <Typography variant="subtitle2" sx={{ mt: 2 }}>
             Members
@@ -148,8 +219,9 @@ export default function CreateGroup(props) {
             value={formValues.members}
             disableCloseOnSelect
             onChange={(e, val) => {
-              handleChange("members", val);
+              handleChange({ members: val });
             }}
+            isOptionEqualToValue={(option, value) => option._id === value._id}
             renderOption={(props, option) => (
               <ListItem {...props} key={option._id}>
                 <ListItemAvatar>
@@ -195,9 +267,9 @@ export default function CreateGroup(props) {
             alignItems: "center",
           }}
         >
-          <SecondaryButton onClick={onClose}>Close</SecondaryButton>
+          <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
           <PrimaryButton variant="contained" onClick={submit}>
-            Create
+            {isEditMode ? "Update" : "Create"}
           </PrimaryButton>
         </DialogActions>
         <ErrorAlert

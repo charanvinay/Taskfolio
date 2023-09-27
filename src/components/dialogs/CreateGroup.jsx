@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import callApi from "../../api";
 import {
   createGroup,
+  deleteGroup,
   fetchGroupDetails,
   getGroupData,
   updateGroup,
@@ -29,13 +30,14 @@ import Storage from "../../utils/localStore";
 import ErrorAlert from "../snackbars/ErrorAlert";
 import PrimaryButton from "../wrappers/PrimaryButton";
 import SecondaryButton from "../wrappers/SecondaryButton";
+import ErrorButton from "../wrappers/ErrorButton";
 const { USER } = APIS;
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function CreateGroup(props) {
-  const { open, onClose, mode, groupId } = props;
+  const { open, onClose, mode, groupId, isAdmin } = props;
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +74,7 @@ export default function CreateGroup(props) {
 
   useEffect(() => {
     setLoading(true);
-    if(groupId){
+    if (groupId) {
       dispatch(fetchGroupDetails({ id: groupId })).then((res) => {
         if (res && res.payload && Object.keys(res.payload).length) {
           let { title, members } = res.payload;
@@ -89,7 +91,7 @@ export default function CreateGroup(props) {
               );
               handleChange({ members: updatedMembers });
             };
-  
+
             fetchMemberInfo();
           }
         }
@@ -186,6 +188,15 @@ export default function CreateGroup(props) {
       setAlertText(message);
     }
   };
+  const handleDeleteGroup = () => {
+    if (groupId) {
+      dispatch(deleteGroup({ id: groupId, uid: activeGroupData["createdBy"] }));
+      onClose();
+    } else {
+      setErrorAlert(true);
+      setAlertText("Please pass group id");
+    }
+  };
   return (
     <>
       <Dialog
@@ -267,6 +278,15 @@ export default function CreateGroup(props) {
             alignItems: "center",
           }}
         >
+          {isEditMode && isAdmin && (
+            <ErrorButton
+              variant="contained"
+              color="error"
+              onClick={handleDeleteGroup}
+            >
+              Delete
+            </ErrorButton>
+          )}
           <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
           <PrimaryButton variant="contained" onClick={submit}>
             {isEditMode ? "Update" : "Create"}

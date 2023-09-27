@@ -199,6 +199,7 @@ const Groups = () => {
         <CreateGroup
           open={openCreateGroup}
           mode={mode}
+          isAdmin={isAdmin}
           groupId={mode === "edit" && activeGroup}
           onClose={() => setOpenCreateGroup(false)}
         />

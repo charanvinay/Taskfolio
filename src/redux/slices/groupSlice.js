@@ -98,7 +98,10 @@ export const createGroup = createAsyncThunk(
       const { status, data } = await callApi(`${GROUP}`, "POST", payload);
       if (status) {
         dispatch(
-          fetchGroups({ uid: payload["createdBy"], active: data["data"]["_id"] })
+          fetchGroups({
+            uid: payload["createdBy"],
+            active: data["data"]["_id"],
+          })
         );
         return {
           status,
@@ -129,6 +132,32 @@ export const updateGroup = createAsyncThunk(
       if (status) {
         dispatch(
           fetchGroups({ id: payload["createdBy"], active: payload["_id"] })
+        );
+        return {
+          status,
+          data: data["data"],
+          message: data.message,
+        };
+      }
+      return rejectWithValue({
+        status,
+        message: data.message,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+export const deleteGroup = createAsyncThunk(
+  "group_slice/deleteGroup",
+  async (args, { rejectWithValue, dispatch }) => {
+    let { id, uid } = args;
+    try {
+      const { status, data } = await callApi(`${GROUP}/${id}`, "DELETE");
+      if (status) {
+        dispatch(
+          fetchGroups({ id: uid })
         );
         return {
           status,
@@ -274,6 +303,19 @@ const groupSlice = createSlice({
         state.activeGroupData = action.payload.data;
       })
       .addCase(joinGroup.rejected, (state, action) => {
+        // state.loading = false;
+      })
+      .addCase(deleteGroup.pending, (state) => {
+        // state.loading = true;
+      })
+      .addCase(deleteGroup.fulfilled, (state, action) => {
+        // state.loading = false;
+        if(state.groups && state.groups.length){
+          state.activeGroup = state.groups[0]._id;
+          state.activeGroupData = state.groups[0];
+        }
+      })
+      .addCase(deleteGroup.rejected, (state, action) => {
         // state.loading = false;
       });
   },

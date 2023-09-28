@@ -63,12 +63,11 @@ const Groups = () => {
         overflow: "hidden",
         boxShadow: "0px 1px 8px rgb(23 110 222 / 10%)",
         position: "sticky",
-        top: "210px",
+        top: "203px",
       }}
     >
       <List
         sx={{ width: "100%" }}
-        component="nav"
         subheader={
           <Typography
             variant="subtitle2"

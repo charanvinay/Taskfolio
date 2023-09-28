@@ -74,7 +74,7 @@ const Tasks = () => {
   ];
   return (
     <>
-      <Stack sx={{ mb: 4 }}>
+      <Box sx={{ mb: 4 }}>
         <Stack>
           <Stack
             direction="row"
@@ -202,7 +202,7 @@ const Tasks = () => {
                 );
               })}
         </Stack>
-      </Stack>
+      </Box>
       {!activeGroup && (
         <NotFound
           text1="No groups found"

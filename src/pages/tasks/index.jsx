@@ -37,7 +37,9 @@ const Tasks = () => {
   const [openAddTask, setOpenAddTask] = useState(false);
   const [alertText, setAlertText] = useState("");
   const [errorAlert, setErrorAlert] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
   const [successAlert, setSuccessAlert] = useState(false);
+  const userData = Storage.getJson("userData");
   const activeDate = useSelector((state) => getUserData(state, "activeDate"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
@@ -51,7 +53,7 @@ const Tasks = () => {
   const activeMemberData = useSelector((state) =>
     getGroupData(state, "activeMemberData")
   );
-  const isLoggedUser = Storage.getJson("userData")?._id === activeMember;
+  const isLoggedUser = userData?._id === activeMember;
   const tasks = useSelector((state) => getTaskData(state, "tasks"));
   const loading = useSelector((state) => getTaskData(state, "loading"));
   const selectedStatus = useSelector((state) =>
@@ -154,6 +156,7 @@ const Tasks = () => {
                     <Chip
                       label={status.label}
                       clickable={false}
+                      key={status.id}
                       variant={!selected ? "outlined" : "filled"}
                       onClick={() => dispatch(setSelectedStatus(status.id))}
                       sx={{
@@ -178,6 +181,7 @@ const Tasks = () => {
             : tasks &&
               tasks.length > 0 &&
               tasks.map((task) => {
+                const myTask = task["createdBy"] === userData["_id"];
                 return (
                   <Paper
                     key={task._id}
@@ -185,7 +189,14 @@ const Tasks = () => {
                       borderLeft: `6px solid ${
                         TASK_STATUS_COLORS[task.status] || COLORS["PRIMARY"]
                       }`,
+                      cursor: myTask && "pointer",
                       padding: 2,
+                    }}
+                    onClick={() => {
+                      if (myTask) {
+                        setOpenAddTask(true);
+                        setSelectedTask(task);
+                      }
                     }}
                   >
                     <Stack
@@ -194,7 +205,13 @@ const Tasks = () => {
                       justifyContent="space-between"
                     >
                       <Typography variant="subtitle2">{task.title}</Typography>
-                      <IconButton size="small">
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          copyToClipBoard(task.title);
+                        }}
+                      >
                         <ContentCopyOutlined fontSize="14px" />
                       </IconButton>
                     </Stack>
@@ -266,8 +283,10 @@ const Tasks = () => {
       {openAddTask && (
         <AddTask
           open={openAddTask}
+          selectedTask={selectedTask}
           onClose={(e) => {
             setOpenAddTask(false);
+            setSelectedTask(null);
             if (e && e.openGroup) {
               dispatch(setActiveGroup(e.openGroup));
             }

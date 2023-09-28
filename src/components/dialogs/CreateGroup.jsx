@@ -173,15 +173,21 @@ export default function CreateGroup(props) {
       if (isEditMode) {
         if (groupId) {
           payload["_id"] = groupId;
-          dispatch(updateGroup({ payload }));
-          onClose();
+          dispatch(updateGroup({ payload })).then((res) => {
+            if (res.payload.status) {
+              onClose();
+            }
+          });
         } else {
           setErrorAlert(true);
           setAlertText("Please pass group id");
         }
       } else {
-        dispatch(createGroup({ payload }));
-        onClose();
+        dispatch(createGroup({ payload })).then((res) => {
+          if (res.payload.status) {
+            onClose();
+          }
+        });
       }
     } else {
       setErrorAlert(true);
@@ -190,8 +196,13 @@ export default function CreateGroup(props) {
   };
   const handleDeleteGroup = () => {
     if (groupId) {
-      dispatch(deleteGroup({ id: groupId, uid: activeGroupData["createdBy"] }));
-      onClose();
+      dispatch(
+        deleteGroup({ id: groupId, uid: activeGroupData["createdBy"] })
+      ).then((res) => {
+        if (res.payload.status) {
+          onClose();
+        }
+      });
     } else {
       setErrorAlert(true);
       setAlertText("Please pass group id");

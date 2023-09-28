@@ -14,7 +14,7 @@ const initialState = {
 
 export const fetchGroups = createAsyncThunk(
   "group_slice/fetchGroups",
-  async (args = { uid: "", active: "" }, { dispatch }) => {
+  async (args = { uid: "", active: "" }, { rejectWithValue, dispatch }) => {
     const { uid, active } = args;
     try {
       let url = GROUP;
@@ -29,6 +29,10 @@ export const fetchGroups = createAsyncThunk(
         }
         return { active, groups };
       }
+      return rejectWithValue({
+        status,
+        message: data.message,
+      });
     } catch (error) {
       console.log(error);
       throw error; // Propagate the error
@@ -73,7 +77,7 @@ export const joinGroup = createAsyncThunk(
     try {
       const { status, data } = await callApi(`${GROUP}/${id}`, "PUT", payload);
       if (status) {
-        dispatch(fetchMembers({ id }));
+        dispatch(fetchGroups({ uid, active: id }));
         return {
           status,
           data: data["data"],
@@ -131,7 +135,7 @@ export const updateGroup = createAsyncThunk(
       );
       if (status) {
         dispatch(
-          fetchGroups({ id: payload["createdBy"], active: payload["_id"] })
+          fetchGroups({ uid: payload["createdBy"], active: payload["_id"] })
         );
         return {
           status,
@@ -156,9 +160,7 @@ export const deleteGroup = createAsyncThunk(
     try {
       const { status, data } = await callApi(`${GROUP}/${id}`, "DELETE");
       if (status) {
-        dispatch(
-          fetchGroups({ id: uid })
-        );
+        dispatch(fetchGroups({ uid }));
         return {
           status,
           data: data["data"],
@@ -177,12 +179,19 @@ export const deleteGroup = createAsyncThunk(
 );
 export const removeMember = createAsyncThunk(
   "group_slice/removeMember",
-  async (args, { rejectWithValue, dispatch }) => {
-    let { id, uid } = args;
+  async (
+    args = { id: "", uid: "", leave: false },
+    { rejectWithValue, dispatch }
+  ) => {
+    let { id, uid, leave } = args;
     try {
       const { status, data } = await callApi(`${GROUP}/${id}/${uid}`, "DELETE");
       if (status) {
-        dispatch(fetchGroupDetails({ id }));
+        if (leave) {
+          dispatch(fetchGroups({ uid }));
+        } else {
+          dispatch(fetchGroupDetails({ id }));
+        }
         return {
           status,
           data: data["data"],
@@ -244,7 +253,7 @@ const groupSlice = createSlice({
       })
       .addCase(fetchGroups.rejected, (state, action) => {
         state.loading = false;
-        console.error("Error:", action.error.message);
+        console.log("Error:", action.payload.message);
       })
       .addCase(fetchGroupDetails.pending, (state) => {
         state.memberLoading = true;
@@ -310,7 +319,7 @@ const groupSlice = createSlice({
       })
       .addCase(deleteGroup.fulfilled, (state, action) => {
         // state.loading = false;
-        if(state.groups && state.groups.length){
+        if (state.groups && state.groups.length) {
           state.activeGroup = state.groups[0]._id;
           state.activeGroupData = state.groups[0];
         }

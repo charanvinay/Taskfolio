@@ -1,3 +1,4 @@
+import { LogoutOutlined } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import LoginIcon from "@mui/icons-material/Login";
 import {
@@ -23,6 +24,7 @@ import {
   fetchGroupDetails,
   fetchGroups,
   getGroupData,
+  removeMember,
 } from "../../../redux/slices/groupSlice";
 import { COLORS } from "../../../utils/constants";
 import Storage from "../../../utils/localStore";
@@ -108,7 +110,7 @@ const Groups = () => {
                       disablePadding
                       secondaryAction={
                         selected &&
-                        isAdmin && (
+                        (isAdmin ? (
                           <ListSecondaryAction
                             tooltip="Edit"
                             onClick={() => {
@@ -117,7 +119,21 @@ const Groups = () => {
                             }}
                             icon={<FaRegEdit size={18} />}
                           />
-                        )
+                        ) : (
+                          <ListSecondaryAction
+                            tooltip="Leave"
+                            onClick={() => {
+                              dispatch(
+                                removeMember({
+                                  id: _id,
+                                  uid: userData["_id"],
+                                  leave: true
+                                })
+                              );
+                            }}
+                            icon={<LogoutOutlined />}
+                          />
+                        ))
                       }
                     >
                       <ListItemButton

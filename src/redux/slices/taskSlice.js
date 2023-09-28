@@ -137,6 +137,69 @@ export const addTask = createAsyncThunk(
     }
   }
 );
+export const updateTask = createAsyncThunk(
+  "task_slice/updateTask",
+  async (args, { rejectWithValue, dispatch }) => {
+    let { payload } = args;
+    try {
+      const { status, data } = await callApi(
+        `${TASK}/${payload["_id"]}`,
+        "PUT",
+        payload
+      );
+      if (status) {
+        dispatch(
+          fetchTasks({
+            activeDate: payload["date"],
+            activeGroup: payload["groupId"],
+            selectedStatus: payload["status"],
+          })
+        );
+        return {
+          status,
+          message: data.message,
+        };
+      }
+      return rejectWithValue({
+        status,
+        message: data.message,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+export const deleteTask = createAsyncThunk(
+  "task_slice/deleteTask",
+  async (args, { rejectWithValue, dispatch }) => {
+    let { payload } = args;
+    const { _id, groupId, date } = payload;
+    try {
+      const { status, data } = await callApi(`${TASK}/${groupId}/${_id}`, "DELETE");
+      if (status) {
+        dispatch(
+          fetchTasks({
+            activeDate: date,
+            activeGroup: groupId,
+            selectedStatus: payload["status"],
+          })
+        );
+        return {
+          status,
+          message: data.message,
+        };
+      }
+      return rejectWithValue({
+        status,
+        message: data.message,
+      });
+    } catch (error) {
+      console.log(error);
+      // throw error;
+    }
+  }
+);
 const taskSlice = createSlice({
   name: "task_slice",
   initialState: initialState,
@@ -195,6 +258,36 @@ const taskSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(addTask.rejected, (state, action) => {
+        state.loading = false;
+        state.error = true;
+        state.message = action.payload.message;
+      })
+      .addCase(updateTask.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+        state.message = "";
+      })
+      .addCase(updateTask.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = false;
+        state.message = action.payload.message;
+      })
+      .addCase(updateTask.rejected, (state, action) => {
+        state.loading = false;
+        state.error = true;
+        state.message = action.payload.message;
+      })
+      .addCase(deleteTask.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+        state.message = "";
+      })
+      .addCase(deleteTask.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = false;
+        state.message = action.payload.message;
+      })
+      .addCase(deleteTask.rejected, (state, action) => {
         state.loading = false;
         state.error = true;
         state.message = action.payload.message;

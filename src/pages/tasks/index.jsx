@@ -9,11 +9,14 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { Tooltip } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import NotFound from "../../components/PageNotFound";
 import AddTask from "../../components/dialogs/AddTask";
+import ErrorAlert from "../../components/snackbars/ErrorAlert";
+import SuccessAlert from "../../components/snackbars/SuccessAlert";
 import { getGroupData, setActiveGroup } from "../../redux/slices/groupSlice";
 import {
   fetchTasks,
@@ -32,6 +35,9 @@ import Storage from "../../utils/localStore";
 import TaskSkeleton from "../../utils/skeletons/Task";
 const Tasks = () => {
   const [openAddTask, setOpenAddTask] = useState(false);
+  const [alertText, setAlertText] = useState("");
+  const [errorAlert, setErrorAlert] = useState(false);
+  const [successAlert, setSuccessAlert] = useState(false);
   const activeDate = useSelector((state) => getUserData(state, "activeDate"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
@@ -72,6 +78,22 @@ const Tasks = () => {
     { id: "", label: "All", color: COLORS["PRIMARY"] },
     ...TASK_STATUSES,
   ];
+  const copyToClipBoard = async (copyMe) => {
+    try {
+      await navigator.clipboard.writeText(copyMe);
+      setSuccessAlert(true);
+      setAlertText("Copied to clipboard");
+    } catch (err) {
+      setErrorAlert(true);
+      setAlertText("Failed to copy!");
+    }
+  };
+  const copyList = () => {
+    const text = tasks.map((task) => ` •  ${task.title}`).join("\n");
+    console.log(text);
+    copyToClipBoard(text);
+  };
+
   return (
     <>
       <Box sx={{ mb: 4 }}>
@@ -89,9 +111,19 @@ const Tasks = () => {
               {activeGroupData["_id"] &&
                 ` tasks in ${activeGroupData["title"]}`}
             </Typography>
-            <IconButton>
-              <ContentCopyOutlined sx={{ fontSize: "18px" }} />
-            </IconButton>
+            {tasks && tasks.length > 0 && (
+              <Tooltip
+                title={`Copy ${
+                  TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
+                  "All"
+                } tasks`}
+                placement="bottom"
+              >
+                <IconButton onClick={copyList}>
+                  <ContentCopyOutlined sx={{ fontSize: "18px" }} />
+                </IconButton>
+              </Tooltip>
+            )}
           </Stack>
           {activeMember && (
             <>
@@ -242,6 +274,16 @@ const Tasks = () => {
           }}
         />
       )}
+      <SuccessAlert
+        open={successAlert}
+        text={alertText}
+        onClose={() => setSuccessAlert(false)}
+      />
+      <ErrorAlert
+        open={errorAlert}
+        text={alertText}
+        onClose={() => setErrorAlert(false)}
+      />
     </>
   );
 };

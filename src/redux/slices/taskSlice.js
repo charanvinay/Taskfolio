@@ -62,7 +62,7 @@ const initialState = {
   ],
   error: false,
   message: "",
-  selectedStatus: ""
+  selectedStatus: "",
 };
 export const fetchTasks = createAsyncThunk(
   "task_slice/fetchTasks",
@@ -78,7 +78,13 @@ export const fetchTasks = createAsyncThunk(
       }
       const { status, data } = await callApi(url);
       if (status) {
-        return { tasks: data["data"], selectedStatus };
+        return {
+          tasks: data["data"].sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          ),
+          selectedStatus,
+        };
       }
     } catch (error) {
       console.log(error);
@@ -143,7 +149,7 @@ const taskSlice = createSlice({
       });
     },
     setSelectedStatus: (state, action) => {
-      state.selectedStatus = action.payload
+      state.selectedStatus = action.payload;
     },
     resetTask: (state) => initialState,
   },

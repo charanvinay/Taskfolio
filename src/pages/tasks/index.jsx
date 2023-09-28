@@ -9,11 +9,14 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { Tooltip } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import NotFound from "../../components/PageNotFound";
 import AddTask from "../../components/dialogs/AddTask";
+import ErrorAlert from "../../components/snackbars/ErrorAlert";
+import SuccessAlert from "../../components/snackbars/SuccessAlert";
 import { getGroupData, setActiveGroup } from "../../redux/slices/groupSlice";
 import {
   fetchTasks,
@@ -32,6 +35,11 @@ import Storage from "../../utils/localStore";
 import TaskSkeleton from "../../utils/skeletons/Task";
 const Tasks = () => {
   const [openAddTask, setOpenAddTask] = useState(false);
+  const [alertText, setAlertText] = useState("");
+  const [errorAlert, setErrorAlert] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [successAlert, setSuccessAlert] = useState(false);
+  const userData = Storage.getJson("userData");
   const activeDate = useSelector((state) => getUserData(state, "activeDate"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
@@ -45,7 +53,7 @@ const Tasks = () => {
   const activeMemberData = useSelector((state) =>
     getGroupData(state, "activeMemberData")
   );
-  const isLoggedUser = Storage.getJson("userData")?._id === activeMember;
+  const isLoggedUser = userData?._id === activeMember;
   const tasks = useSelector((state) => getTaskData(state, "tasks"));
   const loading = useSelector((state) => getTaskData(state, "loading"));
   const selectedStatus = useSelector((state) =>
@@ -72,9 +80,25 @@ const Tasks = () => {
     { id: "", label: "All", color: COLORS["PRIMARY"] },
     ...TASK_STATUSES,
   ];
+  const copyToClipBoard = async (copyMe) => {
+    try {
+      await navigator.clipboard.writeText(copyMe);
+      setSuccessAlert(true);
+      setAlertText("Copied to clipboard");
+    } catch (err) {
+      setErrorAlert(true);
+      setAlertText("Failed to copy!");
+    }
+  };
+  const copyList = () => {
+    const text = tasks.map((task) => ` •  ${task.title}`).join("\n");
+    console.log(text);
+    copyToClipBoard(text);
+  };
+
   return (
     <>
-      <Stack sx={{ mb: 4 }}>
+      <Box sx={{ mb: 4 }}>
         <Stack>
           <Stack
             direction="row"
@@ -89,9 +113,19 @@ const Tasks = () => {
               {activeGroupData["_id"] &&
                 ` tasks in ${activeGroupData["title"]}`}
             </Typography>
-            <IconButton>
-              <ContentCopyOutlined sx={{ fontSize: "18px" }} />
-            </IconButton>
+            {tasks && tasks.length > 0 && (
+              <Tooltip
+                title={`Copy ${
+                  TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
+                  "All"
+                } tasks`}
+                placement="bottom"
+              >
+                <IconButton onClick={copyList}>
+                  <ContentCopyOutlined sx={{ fontSize: "18px" }} />
+                </IconButton>
+              </Tooltip>
+            )}
           </Stack>
           {activeMember && (
             <>
@@ -122,6 +156,7 @@ const Tasks = () => {
                     <Chip
                       label={status.label}
                       clickable={false}
+                      key={status.id}
                       variant={!selected ? "outlined" : "filled"}
                       onClick={() => dispatch(setSelectedStatus(status.id))}
                       sx={{
@@ -146,6 +181,7 @@ const Tasks = () => {
             : tasks &&
               tasks.length > 0 &&
               tasks.map((task) => {
+                const myTask = task["createdBy"] === userData["_id"];
                 return (
                   <Paper
                     key={task._id}
@@ -153,7 +189,14 @@ const Tasks = () => {
                       borderLeft: `6px solid ${
                         TASK_STATUS_COLORS[task.status] || COLORS["PRIMARY"]
                       }`,
+                      cursor: myTask && "pointer",
                       padding: 2,
+                    }}
+                    onClick={() => {
+                      if (myTask) {
+                        setOpenAddTask(true);
+                        setSelectedTask(task);
+                      }
                     }}
                   >
                     <Stack
@@ -162,7 +205,13 @@ const Tasks = () => {
                       justifyContent="space-between"
                     >
                       <Typography variant="subtitle2">{task.title}</Typography>
-                      <IconButton size="small">
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          copyToClipBoard(task.title);
+                        }}
+                      >
                         <ContentCopyOutlined fontSize="14px" />
                       </IconButton>
                     </Stack>
@@ -202,7 +251,7 @@ const Tasks = () => {
                 );
               })}
         </Stack>
-      </Stack>
+      </Box>
       {!activeGroup && (
         <NotFound
           text1="No groups found"
@@ -234,14 +283,26 @@ const Tasks = () => {
       {openAddTask && (
         <AddTask
           open={openAddTask}
+          selectedTask={selectedTask}
           onClose={(e) => {
             setOpenAddTask(false);
+            setSelectedTask(null);
             if (e && e.openGroup) {
               dispatch(setActiveGroup(e.openGroup));
             }
           }}
         />
       )}
+      <SuccessAlert
+        open={successAlert}
+        text={alertText}
+        onClose={() => setSuccessAlert(false)}
+      />
+      <ErrorAlert
+        open={errorAlert}
+        text={alertText}
+        onClose={() => setErrorAlert(false)}
+      />
     </>
   );
 };

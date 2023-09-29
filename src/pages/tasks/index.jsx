@@ -41,6 +41,7 @@ const Tasks = () => {
   const [successAlert, setSuccessAlert] = useState(false);
   const userData = Storage.getJson("userData");
   const activeDate = useSelector((state) => getUserData(state, "activeDate"));
+  const activeWeek = useSelector((state) => getUserData(state, "activeWeek"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
   );
@@ -66,16 +67,27 @@ const Tasks = () => {
       activeMember &&
       (selectedStatus || selectedStatus === "")
     ) {
-      dispatch(
-        fetchTasks({
-          activeDate,
-          activeGroup,
-          uid: activeMember,
-          selectedStatus,
-        })
-      );
+      if (activeDate) {
+        dispatch(
+          fetchTasks({
+            activeDate,
+            activeGroup,
+            uid: activeMember,
+            selectedStatus,
+          })
+        );
+      } else if (activeWeek) {
+        dispatch(
+          fetchTasks({
+            activeWeek,
+            activeGroup,
+            uid: activeMember,
+            selectedStatus,
+          })
+        );
+      }
     }
-  }, [activeDate, activeGroup, activeMember, selectedStatus]);
+  }, [activeDate, activeWeek, activeGroup, activeMember, selectedStatus]);
   const statuses = [
     { id: "", label: "All", color: COLORS["PRIMARY"] },
     ...TASK_STATUSES,

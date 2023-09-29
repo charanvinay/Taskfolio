@@ -6,6 +6,7 @@ const initialState = {
   isMobile: true,
   isDarkMode: false,
   activeDate: moment().format("YYYY-MM-DD"),
+  activeWeek: null,
 };
 export const userSlice = createSlice({
   name: "user_slice",
@@ -13,6 +14,11 @@ export const userSlice = createSlice({
   reducers: {
     setActiveDate: (state, action) => {
       state.activeDate = action.payload;
+      state.activeWeek = null;
+    },
+    setActiveWeek: (state, action) => {
+      state.activeDate = null;
+      state.activeWeek = action.payload;
     },
     setIsDarkMode: (state, action) => {
       state.isDarkMode = action.payload;
@@ -22,5 +28,5 @@ export const userSlice = createSlice({
 });
 
 export const getUserData = (state, key) => state.user[key];
-export const { setIsMobile, setIsDarkMode, setActiveDate, resetUser } = userSlice.actions;
+export const { setIsMobile, setIsDarkMode, setActiveDate, setActiveWeek, resetUser } = userSlice.actions;
 export default userSlice.reducer;

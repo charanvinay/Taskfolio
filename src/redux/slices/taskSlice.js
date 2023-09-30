@@ -7,6 +7,7 @@ import {
   TASK_STATUSES,
   TASK_STATUS_COLORS,
 } from "../../utils/constants";
+import moment from "moment";
 const { TASK, GET_FORMNAMES } = APIS;
 const initialState = {
   tasks: [],
@@ -66,10 +67,23 @@ const initialState = {
 };
 export const fetchTasks = createAsyncThunk(
   "task_slice/fetchTasks",
-  async (args) => {
-    let { activeDate, activeGroup, uid, selectedStatus } = args;
+  async (
+    args = {
+      activeDate: "",
+      activeWeek: null,
+      activeGroup: "",
+      uid: "",
+      selectedStatus: "",
+    }
+  ) => {
+    let { activeDate, activeWeek, activeGroup, uid, selectedStatus } = args;
     try {
       let url = `${TASK}?groupId=${activeGroup}&date=${activeDate}`;
+      if (activeWeek) {
+        let from = activeWeek,
+          to = moment(activeWeek).add(5, "days").format("YYYY-MM-DD");
+        url = `${TASK}?groupId=${activeGroup}&from=${from}&to=${to}`;
+      }
       if (uid) {
         url += `&createdBy=${uid}`;
       }
@@ -176,7 +190,10 @@ export const deleteTask = createAsyncThunk(
     let { payload } = args;
     const { _id, groupId, date } = payload;
     try {
-      const { status, data } = await callApi(`${TASK}/${groupId}/${_id}`, "DELETE");
+      const { status, data } = await callApi(
+        `${TASK}/${groupId}/${_id}`,
+        "DELETE"
+      );
       if (status) {
         dispatch(
           fetchTasks({

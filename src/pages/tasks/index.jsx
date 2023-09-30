@@ -193,7 +193,8 @@ const Tasks = () => {
             : tasks &&
               tasks.length > 0 &&
               tasks.map((task) => {
-                const myTask = task["createdBy"] === userData["_id"];
+                const clickable =
+                  task["createdBy"] === userData["_id"] && activeDate;
                 return (
                   <Paper
                     key={task._id}
@@ -201,11 +202,11 @@ const Tasks = () => {
                       borderLeft: `6px solid ${
                         TASK_STATUS_COLORS[task.status] || COLORS["PRIMARY"]
                       }`,
-                      cursor: myTask && "pointer",
+                      cursor: clickable && "pointer",
                       padding: 2,
                     }}
                     onClick={() => {
-                      if (myTask) {
+                      if (clickable) {
                         setOpenAddTask(true);
                         setSelectedTask(task);
                       }
@@ -234,8 +235,10 @@ const Tasks = () => {
                       sx={{ mt: "4px" }}
                     >
                       <Typography variant="caption">
-                        In {task.formName} @{" "}
-                        {moment(task.createdAt).format("hh:mm a")}
+                        In {task.formName}
+                        {activeWeek
+                          ? " on " + moment(task.date).format("DD-MM-YYYY")
+                          : " @ " + moment(task.createdAt).format("hh:mm a")}
                       </Typography>
                       <Stack direction="row" alignItems="center" spacing={1}>
                         <Box

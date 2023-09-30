@@ -9,13 +9,13 @@ import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import React, { useState } from "react";
-import { COLORS, DUMMY_AVATAR_URL } from "../../../utils/constants";
-import HorizontalCalendar from "./HorizontalCalender";
 import { useDispatch } from "react-redux";
-import { logout } from "../../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
-import Storage from "../../../utils/localStore"
+import { logout } from "../../../redux/slices/authSlice";
 import { resetAll } from "../../../redux/slices/rootReducer";
+import { COLORS } from "../../../utils/constants";
+import Storage from "../../../utils/localStore";
+import HorizontalCalendar from "./HorizontalCalender";
 
 const SETTINGS = [
   { id: "profile", label: "Profile" },
@@ -26,22 +26,26 @@ function DashboardAppbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const userData = Storage.getJson("userData")
+  const userData = Storage.getJson("userData");
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
 
   const handleCloseUserMenu = (id) => {
     setAnchorElUser(null);
-    if(id === "logout"){
-      dispatch(logout())
+    if (id === "logout") {
+      dispatch(logout());
       dispatch(resetAll());
-      navigate("/")
+      navigate("/");
     }
   };
 
   return (
-    <AppBar position="sticky" elevation={0} sx={{backgroundColor: COLORS["PRIMARY"]}}>
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{ backgroundColor: COLORS["PRIMARY"] }}
+    >
       <Container>
         <Toolbar disableGutters>
           <Typography
@@ -52,7 +56,7 @@ function DashboardAppbar() {
               textDecoration: "none",
               flexGrow: 1,
               color: "whitesmoke",
-              textTransform: "capitalize"
+              textTransform: "capitalize",
             }}
           >
             Hi {userData?.["fullName"]}
@@ -60,7 +64,14 @@ function DashboardAppbar() {
           <Stack direction="row" spacing={1}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="USER_NAME" src={DUMMY_AVATAR_URL} />
+                <Avatar
+                  sx={{
+                    bgcolor: "rgba(255,255,255, 0.3)",
+                    color: "whitesmoke",
+                  }}
+                >
+                  {userData?.["fullName"] ? userData?.["fullName"][0] : "U"}
+                </Avatar>
               </IconButton>
             </Tooltip>
             <Menu

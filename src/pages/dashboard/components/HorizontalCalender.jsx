@@ -81,7 +81,7 @@ const HorizontalCalendar = () => {
         currentWeekStartDate = date.clone();
         currentWeekEndDate = date.clone().add(5, "days");
       }
-      if (date.day() === 6 || index === dates.length - 1) {
+      if (date.day() === 6 && !date.isSame(moment(), "day")) {
         calendarItems.push(
           renderWeekLabel(currentWeekStartDate, currentWeekEndDate, index)
         );

@@ -1,6 +1,6 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { useEffect, useMemo } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import Auth from "./pages/auth";
 import Dashboard from "./pages/dashboard";
@@ -10,6 +10,7 @@ import Storage from "./utils/localStore";
 function App() {
   const isLoggedIn = Storage.get("token");
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useMemo(() => getTheme("light"), []);
   const ROUTES = [
     {
@@ -25,11 +26,25 @@ function App() {
       element: <p>Page Not Found</p>,
     },
   ];
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/")
+  const authentication = (path) => {
+    if (["/dashboard"].includes(path)) {
+      if (!isLoggedIn) {
+        navigate("/");
+      }
+    } else if (path === "/") {
+      if (isLoggedIn) {
+        navigate("/dashboard");
+      }
     }
-  }, [isLoggedIn]);
+  };
+  useEffect(() => {
+    authentication(location.pathname);
+    const titles = {
+      "/": "Login | Taskfolio",
+      "/dashboard": "Dashboard | Taskfolio",
+    };
+    document.title = titles[location.pathname] || "LetUsCook";
+  }, [isLoggedIn,location.pathname]);
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

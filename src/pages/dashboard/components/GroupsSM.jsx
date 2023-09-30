@@ -23,7 +23,7 @@ const GroupsSM = () => {
   const groups = useSelector((state) => getGroupData(state, "groups"));
 
   useEffect(() => {
-    dispatch(fetchGroups({ uid: userData["_id"] }));
+    dispatch(fetchGroups({ uid: userData?.["_id"] }));
   }, []);
 
   return (

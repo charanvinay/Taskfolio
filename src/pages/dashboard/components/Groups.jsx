@@ -45,7 +45,7 @@ const Groups = () => {
   const groups = useSelector((state) => getGroupData(state, "groups"));
 
   useEffect(() => {
-    dispatch(fetchGroups({ uid: userData["_id"] }));
+    dispatch(fetchGroups({ uid: userData?.["_id"] }));
   }, []);
   useEffect(() => {
     if (activeRef && activeRef.current) {
@@ -56,7 +56,7 @@ const Groups = () => {
     }
   }, [activeGroup, loading]);
 
-  const isAdmin = userData["_id"] === activeGroupData["createdBy"];
+  const isAdmin = userData?.["_id"] === activeGroupData["createdBy"];
   return (
     <Paper
       sx={{

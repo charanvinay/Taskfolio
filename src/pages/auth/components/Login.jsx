@@ -17,14 +17,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ErrorAlert from "../../../components/snackbars/ErrorAlert";
 import PrimaryButton from "../../../components/wrappers/PrimaryButton";
-import { getAuthData, login } from "../../../redux/slices/authSlice";
+import { getAuthData, login, logout } from "../../../redux/slices/authSlice";
 import { COLORS } from "../../../utils/constants";
 import Storage from "../../../utils/localStore";
 import Loader from "../../dashboard/components/Loader";
+import { resetAll } from "../../../redux/slices/rootReducer";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const isLoggedIn = Storage.get("token")
+  const isLoggedIn = Storage.get("token");
 
   const initialValues = { email: "", password: "" };
   const [showPass, setShowPass] = useState(false);
@@ -88,6 +89,9 @@ const Login = () => {
   useEffect(() => {
     if (isLoggedIn) {
       navigate("/dashboard");
+    } else {
+      dispatch(logout());
+      dispatch(resetAll());
     }
   }, [isLoggedIn]);
 

@@ -55,7 +55,7 @@ function DashboardAppbar() {
               textTransform: "capitalize"
             }}
           >
-            Hi {userData["fullName"]}
+            Hi {userData?.["fullName"]}
           </Typography>
           <Stack direction="row" spacing={1}>
             <Tooltip title="Open settings">

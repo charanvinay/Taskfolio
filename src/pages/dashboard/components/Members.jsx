@@ -4,7 +4,6 @@ import {
   Avatar,
   Box,
   Divider,
-  IconButton,
   List,
   ListItem,
   ListItemAvatar,
@@ -12,12 +11,11 @@ import {
   ListItemText,
   Paper,
   Skeleton,
-  Tooltip,
-  Typography,
-  useTheme,
+  Typography
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import ListSecondaryAction from "../../../components/ListSecondaryAction";
 import AddMember from "../../../components/dialogs/AddMember";
 import PrimaryButton from "../../../components/wrappers/PrimaryButton";
 import {
@@ -28,10 +26,8 @@ import {
 } from "../../../redux/slices/groupSlice";
 import { COLORS, DARKCOLORS } from "../../../utils/constants";
 import Storage from "../../../utils/localStore";
-import ListSecondaryAction from "../../../components/ListSecondaryAction";
 const Members = () => {
   const dispatch = useDispatch();
-  const theme = useTheme();
   const [addMember, setAddMember] = useState(false);
   const userData = Storage.getJson("userData");
   const loading = useSelector((state) => getGroupData(state, "memberLoading"));
@@ -51,7 +47,7 @@ const Members = () => {
       dispatch(fetchMembers({ id: activeGroup }));
     }
   }, [activeGroup, activeGroupData]);
-  const isAdmin = userData["_id"] === activeGroupData["createdBy"];
+  const isAdmin = userData?.["_id"] === activeGroupData["createdBy"];
   return (
     <>
       {members && members.length > 0 && (

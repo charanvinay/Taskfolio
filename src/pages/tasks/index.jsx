@@ -8,6 +8,8 @@ import {
   Paper,
   Stack,
   Typography,
+  Zoom,
+  useTheme,
 } from "@mui/material";
 import { Tooltip } from "antd";
 import moment from "moment";
@@ -63,6 +65,8 @@ const Tasks = () => {
     getTaskData(state, "selectedStatus")
   );
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const bpSMd = theme.breakpoints.down("sm");
   useEffect(() => {
     if (
       activeGroup &&
@@ -109,7 +113,10 @@ const Tasks = () => {
     console.log(text);
     copyToClipBoard(text);
   };
-
+  const transitionDuration = {
+    enter: theme.transitions.duration.enteringScreen,
+    exit: theme.transitions.duration.leavingScreen,
+  };
   return (
     <>
       <Box sx={{ mb: 4 }}>
@@ -180,7 +187,10 @@ const Tasks = () => {
                         TASK_STATUS_COLORS[task.status] || COLORS["PRIMARY"]
                       }`,
                       cursor: clickable && "pointer",
-                      padding: 2,
+                      padding: "15px",
+                      [bpSMd]: {
+                        padding: "12px",
+                      },
                     }}
                     onClick={() => {
                       if (clickable) {
@@ -256,7 +266,14 @@ const Tasks = () => {
           text2="Click on + button to create task"
         />
       )}
-      {activeGroup && (
+      <Zoom
+        in={Boolean(activeGroup && activeDate)}
+        timeout={transitionDuration}
+        style={{
+          transitionDelay: `${transitionDuration.exit}ms`,
+        }}
+        unmountOnExit
+      >
         <Fab
           color="primary"
           aria-label="add"
@@ -271,7 +288,8 @@ const Tasks = () => {
         >
           <AddIcon />
         </Fab>
-      )}
+      </Zoom>
+
       {openAddTask && (
         <AddTask
           open={openAddTask}

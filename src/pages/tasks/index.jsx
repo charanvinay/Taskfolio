@@ -33,6 +33,8 @@ import {
 } from "../../utils/constants";
 import Storage from "../../utils/localStore";
 import TaskSkeleton from "../../utils/skeletons/Task";
+import { HorizontalScroll } from "../../components/wrappers/HorizontalScroll";
+import { TextStripes } from "../../components/wrappers/TextStripes";
 const Tasks = () => {
   const [openAddTask, setOpenAddTask] = useState(false);
   const [alertText, setAlertText] = useState("");
@@ -117,51 +119,26 @@ const Tasks = () => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Typography
-              variant="subtitle2"
-              sx={{ fontWeight: "500", textTransform: "capitalize" }}
-            >
+            <TextStripes variant="subtitle2">
               {isLoggedUser ? "My" : activeMemberData?.["fullName"]}
               {activeGroupData["_id"] &&
                 ` tasks in ${activeGroupData?.["title"]}`}
-            </Typography>
-            {tasks && tasks.length > 0 && (
-              <Tooltip
-                title={`Copy ${
-                  TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
-                  "All"
-                } tasks`}
-                placement="bottom"
-              >
-                <IconButton onClick={copyList}>
-                  <ContentCopyOutlined sx={{ fontSize: "18px" }} />
-                </IconButton>
-              </Tooltip>
-            )}
+            </TextStripes>
+            <Tooltip
+              title={`Copy ${
+                TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
+                "All"
+              } tasks`}
+              placement="bottom"
+            >
+              <IconButton onClick={copyList}>
+                <ContentCopyOutlined sx={{ fontSize: "18px" }} />
+              </IconButton>
+            </Tooltip>
           </Stack>
           {activeMember && (
             <>
-              <Box
-                sx={{
-                  width: "40px",
-                  height: "2px",
-                  backgroundColor: COLORS["PRIMARY"],
-                  mb: "2px",
-                }}
-              ></Box>
-              <Box
-                sx={{
-                  width: "20px",
-                  height: "2px",
-                  backgroundColor: COLORS["PRIMARY"],
-                }}
-              ></Box>
-              <Stack
-                direction="row"
-                className="hide-scrollbar-x"
-                spacing={1}
-                sx={{ overflowX: "scroll", mt: 1 }}
-              >
+              <HorizontalScroll direction="row" spacing={1} sx={{ mt: 1 }}>
                 {statuses.map((status) => {
                   const selected = status.id === selectedStatus;
                   return (
@@ -179,7 +156,7 @@ const Tasks = () => {
                     />
                   );
                 })}
-              </Stack>
+              </HorizontalScroll>
             </>
           )}
         </Stack>

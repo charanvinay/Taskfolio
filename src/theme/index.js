@@ -1,8 +1,8 @@
-import { createTheme } from "@mui/material";
+import { createTheme, responsiveFontSizes } from "@mui/material";
 import { THEME_VALUES } from "../utils/constants";
 
-export const getTheme = (mode) =>
-  createTheme({
+export const getTheme = (mode) => {
+  let theme = createTheme({
     palette: {
       mode: mode,
       primary: {
@@ -75,7 +75,7 @@ export const getTheme = (mode) =>
               display: "flex",
               alignItems: "center",
               letterSpacing: 0,
-              fontWeight: "600"
+              fontWeight: "600",
             },
           },
           {
@@ -97,12 +97,18 @@ export const getTheme = (mode) =>
       MuiDialogTitle: {
         styleOverrides: {
           root: {
-            textAlign: 'center', 
+            textAlign: "center",
             letterSpacing: 0,
             fontWeight: "500",
-            fontSize: "18px"
+            fontSize: "18px",
           },
         },
       },
     },
   });
+  theme = responsiveFontSizes(theme, {
+    breakpoints: ["sm"],
+    disableAlign: true, // Disable auto-align to maintain custom sizes
+  });
+  return theme;
+};

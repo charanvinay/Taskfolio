@@ -8,6 +8,7 @@ import {
 } from "../../../redux/slices/userSlice";
 import moment from "moment";
 import Date from "../../../utils/skeletons/Date";
+import { HorizontalScroll } from "../../../components/wrappers/HorizontalScroll";
 
 const HorizontalCalendar = () => {
   const [dates, setDates] = useState([]);
@@ -48,9 +49,14 @@ const HorizontalCalendar = () => {
     )}`;
     const isSelected = weekStartDate.format("YYYY-MM-DD") === activeWeek;
     return (
-      <Stack
+      <Box
         key={`${weekLabel}_${i}`}
         sx={{
+          display: "flex",
+          alignSelf: "center",
+          alignItems: "center",
+          justifyContent: "center",
+          minWidth: "130px",
           padding: "5px 18px",
           borderRadius: "10px",
           border: isSelected ? "2px solid #235ff8" : "none",
@@ -59,14 +65,11 @@ const HorizontalCalendar = () => {
         onClick={() =>
           dispatch(setActiveWeek(weekStartDate.format("YYYY-MM-DD")))
         }
-        justifyContent="center"
-        alignItems="center"
-        spacing={0}
       >
         <Typography variant="overline" sx={{ color: "whitesmoke" }}>
           {weekLabel}
         </Typography>
-      </Stack>
+      </Box>
     );
   };
 
@@ -134,7 +137,7 @@ const HorizontalCalendar = () => {
   const filledArray = new Array(30).fill(0).map((_, index) => index + 1);
 
   return (
-    <Box className="calendar-container hide-scrollbar-x">
+    <HorizontalScroll direction="row" spacing={1}>
       {loading ? (
         filledArray.map((_, i) => {
           return (
@@ -146,7 +149,7 @@ const HorizontalCalendar = () => {
       ) : (
         <>{renderCalendar()}</>
       )}
-    </Box>
+    </HorizontalScroll>
   );
 };
 

@@ -8,6 +8,8 @@ import {
   Paper,
   Stack,
   Typography,
+  Zoom,
+  useTheme,
 } from "@mui/material";
 import { Tooltip } from "antd";
 import moment from "moment";
@@ -33,6 +35,8 @@ import {
 } from "../../utils/constants";
 import Storage from "../../utils/localStore";
 import TaskSkeleton from "../../utils/skeletons/Task";
+import { HorizontalScroll } from "../../components/wrappers/HorizontalScroll";
+import { TextStripes } from "../../components/wrappers/TextStripes";
 const Tasks = () => {
   const [openAddTask, setOpenAddTask] = useState(false);
   const [alertText, setAlertText] = useState("");
@@ -61,6 +65,8 @@ const Tasks = () => {
     getTaskData(state, "selectedStatus")
   );
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const bpSMd = theme.breakpoints.down("sm");
   useEffect(() => {
     if (
       activeGroup &&
@@ -107,7 +113,10 @@ const Tasks = () => {
     console.log(text);
     copyToClipBoard(text);
   };
-
+  const transitionDuration = {
+    enter: theme.transitions.duration.enteringScreen,
+    exit: theme.transitions.duration.leavingScreen,
+  };
   return (
     <>
       <Box sx={{ mb: 4 }}>
@@ -117,51 +126,26 @@ const Tasks = () => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Typography
-              variant="subtitle2"
-              sx={{ fontWeight: "500", textTransform: "capitalize" }}
-            >
+            <TextStripes variant="subtitle2">
               {isLoggedUser ? "My" : activeMemberData?.["fullName"]}
               {activeGroupData["_id"] &&
                 ` tasks in ${activeGroupData?.["title"]}`}
-            </Typography>
-            {tasks && tasks.length > 0 && (
-              <Tooltip
-                title={`Copy ${
-                  TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
-                  "All"
-                } tasks`}
-                placement="bottom"
-              >
-                <IconButton onClick={copyList}>
-                  <ContentCopyOutlined sx={{ fontSize: "18px" }} />
-                </IconButton>
-              </Tooltip>
-            )}
+            </TextStripes>
+            <Tooltip
+              title={`Copy ${
+                TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
+                "All"
+              } tasks`}
+              placement="bottom"
+            >
+              <IconButton onClick={copyList}>
+                <ContentCopyOutlined sx={{ fontSize: "18px" }} />
+              </IconButton>
+            </Tooltip>
           </Stack>
           {activeMember && (
             <>
-              <Box
-                sx={{
-                  width: "40px",
-                  height: "2px",
-                  backgroundColor: COLORS["PRIMARY"],
-                  mb: "2px",
-                }}
-              ></Box>
-              <Box
-                sx={{
-                  width: "20px",
-                  height: "2px",
-                  backgroundColor: COLORS["PRIMARY"],
-                }}
-              ></Box>
-              <Stack
-                direction="row"
-                className="hide-scrollbar-x"
-                spacing={1}
-                sx={{ overflowX: "scroll", mt: 1 }}
-              >
+              <HorizontalScroll direction="row" spacing={1} sx={{ mt: 1 }}>
                 {statuses.map((status) => {
                   const selected = status.id === selectedStatus;
                   return (
@@ -179,7 +163,7 @@ const Tasks = () => {
                     />
                   );
                 })}
-              </Stack>
+              </HorizontalScroll>
             </>
           )}
         </Stack>
@@ -203,7 +187,10 @@ const Tasks = () => {
                         TASK_STATUS_COLORS[task.status] || COLORS["PRIMARY"]
                       }`,
                       cursor: clickable && "pointer",
-                      padding: 2,
+                      padding: "15px",
+                      [bpSMd]: {
+                        padding: "12px",
+                      },
                     }}
                     onClick={() => {
                       if (clickable) {
@@ -279,7 +266,14 @@ const Tasks = () => {
           text2="Click on + button to create task"
         />
       )}
-      {activeGroup && (
+      <Zoom
+        in={Boolean(activeGroup && activeDate)}
+        timeout={transitionDuration}
+        style={{
+          transitionDelay: `${transitionDuration.exit}ms`,
+        }}
+        unmountOnExit
+      >
         <Fab
           color="primary"
           aria-label="add"
@@ -294,7 +288,8 @@ const Tasks = () => {
         >
           <AddIcon />
         </Fab>
-      )}
+      </Zoom>
+
       {openAddTask && (
         <AddTask
           open={openAddTask}

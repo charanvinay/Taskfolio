@@ -1,16 +1,14 @@
 import { SearchOutlined } from "@mui/icons-material";
 import {
-  Avatar,
   Box,
   InputAdornment,
   List,
-  ListItemAvatar,
   ListItemButton,
   ListItemText,
   OutlinedInput,
   Skeleton,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -24,10 +22,10 @@ import { joinGroup } from "../../redux/slices/groupSlice";
 import {
   APIS,
   COLORS,
-  DARKCOLORS,
-  DEBOUNCE_DELAY,
+  DEBOUNCE_DELAY
 } from "../../utils/constants";
 import Storage from "../../utils/localStore";
+import ListAvatar from "../ListAvatar";
 import PrimaryButton from "../wrappers/PrimaryButton";
 import SecondaryButton from "../wrappers/SecondaryButton";
 const { GROUP } = APIS;
@@ -147,15 +145,7 @@ export default function JoinGroup(props) {
                         borderRadius: 2,
                       }}
                     >
-                      <ListItemAvatar>
-                        <Avatar
-                          sx={{
-                            bgcolor: DARKCOLORS[title[0].toLowerCase()],
-                          }}
-                        >
-                          {title[0]}
-                        </Avatar>
-                      </ListItemAvatar>
+                      <ListAvatar letter={title[0]} />
                       <ListItemText
                         primary={title}
                         secondary={`${members.length} members`}

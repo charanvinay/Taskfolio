@@ -1,16 +1,14 @@
 import { SearchOutlined } from "@mui/icons-material";
 import {
-  Avatar,
   Box,
   InputAdornment,
   List,
-  ListItemAvatar,
   ListItemButton,
   ListItemText,
   OutlinedInput,
   Skeleton,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -20,17 +18,17 @@ import Slide from "@mui/material/Slide";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import callApi from "../../api";
-import { fetchMembers, getGroupData, joinGroup } from "../../redux/slices/groupSlice";
+import { getGroupData, joinGroup } from "../../redux/slices/groupSlice";
 import {
   APIS,
   COLORS,
-  DARKCOLORS,
-  DEBOUNCE_DELAY,
+  DEBOUNCE_DELAY
 } from "../../utils/constants";
 import Storage from "../../utils/localStore";
+import ListAvatar from "../ListAvatar";
+import ErrorAlert from "../snackbars/ErrorAlert";
 import PrimaryButton from "../wrappers/PrimaryButton";
 import SecondaryButton from "../wrappers/SecondaryButton";
-import ErrorAlert from "../snackbars/ErrorAlert";
 const { USER } = APIS;
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -159,15 +157,7 @@ export default function AddMember(props) {
                         borderRadius: 2,
                       }}
                     >
-                      <ListItemAvatar>
-                        <Avatar
-                          sx={{
-                            bgcolor: DARKCOLORS[fullName[0].toLowerCase()],
-                          }}
-                        >
-                          {fullName[0]}
-                        </Avatar>
-                      </ListItemAvatar>
+                      <ListAvatar letter={fullName[0]} />
                       <ListItemText
                         primary={fullName}
                         secondary={email}

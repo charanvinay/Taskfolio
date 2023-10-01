@@ -253,7 +253,7 @@ const groupSlice = createSlice({
       })
       .addCase(fetchGroups.rejected, (state, action) => {
         state.loading = false;
-        console.log("Error:", action.payload.message);
+        console.log("Error:", action?.payload?.message);
       })
       .addCase(fetchGroupDetails.pending, (state) => {
         state.memberLoading = true;

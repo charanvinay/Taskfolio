@@ -1,14 +1,12 @@
 import {
   Autocomplete,
-  Avatar,
   CircularProgress,
   ListItem,
-  ListItemAvatar,
   ListItemText,
   OutlinedInput,
   TextField,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -25,12 +23,13 @@ import {
   getGroupData,
   updateGroup,
 } from "../../redux/slices/groupSlice";
-import { APIS, DARKCOLORS, DEBOUNCE_DELAY } from "../../utils/constants";
+import { APIS, DEBOUNCE_DELAY } from "../../utils/constants";
 import Storage from "../../utils/localStore";
+import ListAvatar from "../ListAvatar";
 import ErrorAlert from "../snackbars/ErrorAlert";
+import ErrorButton from "../wrappers/ErrorButton";
 import PrimaryButton from "../wrappers/PrimaryButton";
 import SecondaryButton from "../wrappers/SecondaryButton";
-import ErrorButton from "../wrappers/ErrorButton";
 const { USER } = APIS;
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -246,15 +245,7 @@ export default function CreateGroup(props) {
             isOptionEqualToValue={(option, value) => option._id === value._id}
             renderOption={(props, option) => (
               <ListItem {...props} key={option._id}>
-                <ListItemAvatar>
-                  <Avatar
-                    sx={{
-                      bgcolor: DARKCOLORS[option.fullName[0].toLowerCase()],
-                    }}
-                  >
-                    {option.fullName[0]}
-                  </Avatar>
-                </ListItemAvatar>
+                <ListAvatar letter={option.fullName[0]} />
                 <ListItemText
                   primary={option.fullName}
                   secondary={option.email}

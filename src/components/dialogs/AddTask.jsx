@@ -200,7 +200,7 @@ export default function AddTask(props) {
                         options={getOptions(name, value) || options}
                         onChange={(e, inpVal) => {
                           let val = inpVal;
-                          console.log(val);
+                          // console.log(val);
                           if (name === "groupId") {
                             val = groups.find((g) => g.title === inpVal)?._id;
                             dispatch(fetchFormNames({ groupId: val }));

@@ -121,9 +121,9 @@ const Tasks = () => {
               variant="subtitle2"
               sx={{ fontWeight: "500", textTransform: "capitalize" }}
             >
-              {isLoggedUser ? "My" : activeMemberData["fullName"]}
+              {isLoggedUser ? "My" : activeMemberData?.["fullName"]}
               {activeGroupData["_id"] &&
-                ` tasks in ${activeGroupData["title"]}`}
+                ` tasks in ${activeGroupData?.["title"]}`}
             </Typography>
             {tasks && tasks.length > 0 && (
               <Tooltip

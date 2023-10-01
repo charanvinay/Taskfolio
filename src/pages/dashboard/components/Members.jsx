@@ -1,12 +1,10 @@
 import { PersonRemoveOutlined } from "@mui/icons-material";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import {
-  Avatar,
   Box,
   Divider,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemButton,
   ListItemText,
   Paper,
@@ -15,6 +13,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import ListAvatar from "../../../components/ListAvatar";
 import ListSecondaryAction from "../../../components/ListSecondaryAction";
 import AddMember from "../../../components/dialogs/AddMember";
 import PrimaryButton from "../../../components/wrappers/PrimaryButton";
@@ -24,7 +23,7 @@ import {
   removeMember,
   setActiveMember,
 } from "../../../redux/slices/groupSlice";
-import { COLORS, DARKCOLORS } from "../../../utils/constants";
+import { COLORS } from "../../../utils/constants";
 import Storage from "../../../utils/localStore";
 const Members = () => {
   const dispatch = useDispatch();
@@ -125,15 +124,7 @@ const Members = () => {
                             padding: "5px 10px",
                           }}
                         >
-                          <ListItemAvatar>
-                            <Avatar
-                              sx={{
-                                bgcolor: DARKCOLORS[fullName[0].toLowerCase()],
-                              }}
-                            >
-                              {fullName[0]}
-                            </Avatar>
-                          </ListItemAvatar>
+                          <ListAvatar letter={fullName[0]} />
                           <ListItemText
                             primary={fullName}
                             secondary={email}

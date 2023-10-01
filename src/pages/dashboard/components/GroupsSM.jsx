@@ -1,26 +1,19 @@
 import {
-  Autocomplete,
-  IconButton,
-  ListItem,
-  ListItemButton,
-  ListItemText,
   Skeleton,
   Stack,
-  TextField,
-  Typography,
+  Typography
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import DropdownBtn from "../../../components/DropdownBtn";
+import ChangeGroupSM from "../../../components/dialogs/ChangeGroupSM";
+import CreateGroup from "../../../components/dialogs/CreateGroup";
+import JoinGroup from "../../../components/dialogs/JoinGroup";
 import {
-  fetchGroupDetails,
   fetchGroups,
-  getGroupData,
+  getGroupData
 } from "../../../redux/slices/groupSlice";
 import Storage from "../../../utils/localStore";
-import ChangeGroupSM from "../../../components/dialogs/ChangeGroupSM";
-import { ArrowDownwardOutlined, ExpandMore } from "@mui/icons-material";
-import JoinGroup from "../../../components/dialogs/JoinGroup";
-import CreateGroup from "../../../components/dialogs/CreateGroup";
 const GroupsSM = () => {
   const dispatch = useDispatch();
   const [changeGroup, setChangeGroup] = useState(false);
@@ -28,7 +21,7 @@ const GroupsSM = () => {
   const [openJoinGroup, setOpenJoinGroup] = useState(false);
   const [mode, setMode] = useState("add");
   const [openCreateGroup, setOpenCreateGroup] = useState(false);
-  
+
   const loading = useSelector((state) => getGroupData(state, "loading"));
   const activeGroup = useSelector((state) =>
     getGroupData(state, "activeGroup")
@@ -36,7 +29,6 @@ const GroupsSM = () => {
   const activeGroupData = useSelector((state) =>
     getGroupData(state, "activeGroupData")
   );
-  const groups = useSelector((state) => getGroupData(state, "groups"));
 
   useEffect(() => {
     dispatch(fetchGroups({ uid: userData?.["_id"] }));
@@ -56,26 +48,17 @@ const GroupsSM = () => {
           sx={{ width: "100%", mb: 1 }}
         />
       ) : (
-        <ListItem
-          disablePadding
-          sx={{
-            border: "1px solid #ccc",
-            borderRadius: "5px"
-          }}
-          onClick={()=>setChangeGroup(true)}
-        >
-          <ListItemButton sx={{p:1, py:"5px"}}>
-            <ListItemText primary={activeGroupData["title"]} />
-            <ExpandMore />
-          </ListItemButton>
-        </ListItem>
+        <DropdownBtn
+          onClick={() => setChangeGroup(true)}
+          title={activeGroupData["title"]}
+        />
       )}
       {changeGroup && (
         <ChangeGroupSM
           open={changeGroup}
-          setMode={(e)=>setMode(e)}
-          setOpenCreateGroup={(e)=>setOpenCreateGroup(e)}
-          setOpenJoinGroup={(e)=>setOpenJoinGroup(e)}
+          setMode={(e) => setMode(e)}
+          setOpenCreateGroup={(e) => setOpenCreateGroup(e)}
+          setOpenJoinGroup={(e) => setOpenJoinGroup(e)}
           onClose={() => setChangeGroup(false)}
         />
       )}

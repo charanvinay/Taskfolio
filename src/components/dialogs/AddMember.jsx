@@ -53,6 +53,7 @@ export default function AddMember(props) {
   );
   let debounceTimer;
   useEffect(() => {
+    setLoading(true);
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }

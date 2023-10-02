@@ -1,3 +1,8 @@
+import Login from "../../src/Assets/login.png";
+import BoyWithTasks from "../../src/Assets/boywithtasks.png";
+import BoyWithPhone from "../../src/Assets/boyphone.png";
+import GroupTasks from "../../src/Assets/grouptasks.png";
+import ManWithPhone from "../../src/Assets/manwithphone.png";
 const constants = {
   BASE_URL: process.env.REACT_APP_BACKEND_URL,
   DEBOUNCE_DELAY: 300,
@@ -88,4 +93,87 @@ export const DARKCOLORS = {
   z: "#0288D1", // Dark blue
 };
 
+export const getTaskFormSchema = () => {
+  return [
+    {
+      id: 1,
+      name: "groupId",
+      label: "Group",
+      element: "dropdown",
+      freeSolo: false,
+      value: null,
+      placeholder: "Select a group",
+    },
+    {
+      id: 2,
+      name: "formName",
+      label: "Form/Module/Page name",
+      element: "dropdown",
+      freeSolo: true,
+      value: null,
+      placeholder: "Eg: Doctor Assessment",
+      options: [],
+    },
+    {
+      id: 3,
+      name: "type",
+      label: "Type",
+      element: "radio",
+      value: TASKTYPES[0]["id"],
+      options: TASKTYPES,
+      colors: TASKTYPECOLORS,
+    },
+    {
+      id: 5,
+      name: "status",
+      label: "Status",
+      element: "radio",
+      value: TASK_STATUSES[0]["id"],
+      options: TASK_STATUSES,
+      colors: TASK_STATUS_COLORS,
+    },
+    {
+      id: 4,
+      name: "title",
+      label: "What have you done?",
+      element: "input",
+      value: null,
+      multiline: true,
+      placeholder: "Eg: Developed a user interface for billing form...",
+    },
+  ];
+};
+
+export const CAROUSEL_ITEMS = [
+  {
+    id: 1,
+    alt: "Boy with laptop",
+    text: "Login with you credentials and track your tasks more effectively",
+    imageUrl: Login,
+  },
+  {
+    id: 2,
+    alt: "Boy with laptop in his hand showing tasks",
+    text: "Track Task Progress and Achievements",
+    imageUrl: BoyWithTasks,
+  },
+  {
+    id: 3,
+    alt: "Boy with phone",
+    text: "Manage tasks anywhere, anytime with responsive design",
+    imageUrl: BoyWithPhone,
+  },
+  {
+    id: 4,
+    alt: "Girl with phone",
+    text: "Collaborative Task Sharing for Teamwork",
+    imageUrl: GroupTasks,
+  },
+  {
+    id: 5,
+    alt: "Man with phone",
+    text: "Able to copy all the completed tasks and paste in emails ",
+    imageUrl: ManWithPhone,
+  },
+];
 export const { BASE_URL, DEBOUNCE_DELAY, DUMMY_AVATAR_URL } = constants;

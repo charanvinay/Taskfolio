@@ -1,10 +1,11 @@
-import { Box, Grid, Hidden } from "@mui/material";
+import { Box, Grid, Hidden, Stack, Typography } from "@mui/material";
 import React from "react";
-import { COLORS } from "../../../utils/constants";
+import { CAROUSEL_ITEMS, COLORS } from "../../../utils/constants";
 
 import dotsb from "../../../Assets/dotsb.png";
 import dotscross from "../../../Assets/dotscross.png";
 import login from "../../../Assets/login.png";
+import { Carousel } from "react-responsive-carousel";
 
 const LeftBanners = () => {
   return (
@@ -18,7 +19,6 @@ const LeftBanners = () => {
           justifyContent: "center",
           alignItems: "center",
           position: "relative",
-          padding: "20px",
           overflow: "hidden",
           backgroundColor: COLORS["PRIMARY"],
         }}
@@ -35,7 +35,46 @@ const LeftBanners = () => {
         >
           <img src={dotscross} alt={"dotswhite"} width="400px" />
         </Box>
-        <img src={login} alt={"login_image"} width="70%" />
+        <Carousel
+          autoPlay
+          emulateTouch
+          infiniteLoop
+          showArrows={false}
+          showThumbs={false}
+          showStatus={false}
+        >
+          {CAROUSEL_ITEMS.map((slide) => {
+            const { id, alt, text, imageUrl } = slide;
+            return (
+              <Stack
+                spacing={2}
+                justifyContent="center"
+                alignItems="center"
+                key={id}
+                sx={{
+                  width: "100%",
+                  height: "100dvh",
+                }}
+              >
+                <Box sx={{ minWidth: "50%",maxWidth: "50%" }}>
+                  <img
+                    src={imageUrl}
+                    alt={alt}
+                    style={{ objectFit: "contain", width: "100%" }}
+                  />
+                </Box>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "white",
+                  }}
+                >
+                  {text}
+                </Typography>
+              </Stack>
+            );
+          })}
+        </Carousel>
         <Box
           sx={{
             overflow: "hidden",

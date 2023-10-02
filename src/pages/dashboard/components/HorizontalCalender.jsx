@@ -66,7 +66,7 @@ const HorizontalCalendar = () => {
           dispatch(setActiveWeek(weekStartDate.format("YYYY-MM-DD")))
         }
       >
-        <Typography variant="overline" sx={{ color: "whitesmoke" }}>
+        <Typography variant="subtitle2" sx={{ color: isSelected ? "white" : "#7197f7", }}>
           {weekLabel}
         </Typography>
       </Box>

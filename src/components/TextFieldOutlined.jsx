@@ -11,7 +11,7 @@ const TextFieldOutlined = (props) => {
         name={name}
         value={value}
         onChange={onChange}
-        sx={{ borderRadius: "8px", padding: "4px 0px" }}
+        sx={{ borderRadius: "8px", padding: "2px 0px", fontSize: "14px" }}
       />
     </Box>
   );

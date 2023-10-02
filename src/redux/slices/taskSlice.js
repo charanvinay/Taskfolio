@@ -176,6 +176,7 @@ const taskSlice = createSlice({
         if (field.name === action.payload.name) {
           field.value = action.payload.value;
         }
+        return field;
       });
     },
     setSelectedStatus: (state, action) => {
@@ -208,6 +209,7 @@ const taskSlice = createSlice({
           if (field.name === "formName") {
             field.options = action.payload;
           }
+          return field;
         });
       })
       .addCase(fetchFormNames.rejected, (state, action) => {

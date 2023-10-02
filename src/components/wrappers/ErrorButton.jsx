@@ -1,6 +1,5 @@
 import { Button } from '@mui/material';
 import { styled } from '@mui/system';
-import { COLORS } from '../../utils/constants';
 
 const ErrorButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.error.main,

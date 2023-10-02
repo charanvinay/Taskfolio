@@ -2,10 +2,9 @@ import { Box, Grid, Hidden, Stack, Typography } from "@mui/material";
 import React from "react";
 import { CAROUSEL_ITEMS, COLORS } from "../../../utils/constants";
 
+import { Carousel } from "react-responsive-carousel";
 import dotsb from "../../../Assets/dotsb.png";
 import dotscross from "../../../Assets/dotscross.png";
-import login from "../../../Assets/login.png";
-import { Carousel } from "react-responsive-carousel";
 
 const LeftBanners = () => {
   return (

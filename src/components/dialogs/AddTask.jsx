@@ -70,7 +70,7 @@ export default function AddTask(props) {
 
   useEffect(() => {
     if (selectedTask) {
-      formSchema.map((field) => {
+      formSchema.forEach((field) => {
         let val = selectedTask[field.name];
         if (field.name === "groupId") {
           dispatch(fetchFormNames({ groupId: val }));
@@ -78,7 +78,7 @@ export default function AddTask(props) {
         dispatch(handleTask({ name: field.name, value: val }));
       });
     } else {
-      formSchema.map((field) => {
+      formSchema.forEach((field) => {
         let schema = getTaskFormSchema();
         let isExisits = schema.find((e) => e.name === field.name);
         if (isExisits) {
@@ -102,7 +102,7 @@ export default function AddTask(props) {
 
   const validateFields = () => {
     const errors = [];
-    formSchema.map((field) => {
+    formSchema.forEach((field) => {
       if (!field.value) {
         errors.push(field.label);
       }
@@ -116,7 +116,7 @@ export default function AddTask(props) {
         createdBy: userData["_id"],
         date: activeDate,
       };
-      formSchema.map((field) => {
+      formSchema.forEach((field) => {
         payload[field.name] = field.value;
       });
       if (selectedTask) {
@@ -259,6 +259,7 @@ export default function AddTask(props) {
                     </Grid>
                   );
                 }
+                return null
               })}
           </Grid>
         </DialogContent>

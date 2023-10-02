@@ -36,6 +36,7 @@ const callApi = async (url, method = "GET", data) => {
     console.log(error);
     if (error.response && error.response.status === 401) {
       window.location.href = "/";
+      Storage.clearAll();
     }
     return { status: false, data: error.response.data };
   }

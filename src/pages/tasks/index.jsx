@@ -131,7 +131,7 @@ const Tasks = () => {
               {activeGroupData["_id"] &&
                 ` tasks in ${activeGroupData?.["title"]}`}
             </TextStripes>
-            <Tooltip
+            {activeGroupData["_id"] && <Tooltip
               title={`Copy ${
                 TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
                 "All"
@@ -141,7 +141,7 @@ const Tasks = () => {
               <IconButton onClick={copyList}>
                 <ContentCopyOutlined sx={{ fontSize: "18px" }} />
               </IconButton>
-            </Tooltip>
+            </Tooltip>}
           </Stack>
           {activeMember && (
             <>

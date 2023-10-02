@@ -3,7 +3,7 @@ import axios from "axios";
 import { APIS } from "../../utils/constants";
 import Storage from "../../utils/localStore";
 import { BASE_URL } from "../../utils/constants";
-const { LOGIN } = APIS;
+const { LOGIN, REGISTER } = APIS;
 const initialState = {
   userData: {},
   error: null,
@@ -14,6 +14,27 @@ export const login = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${BASE_URL}${LOGIN}`, credentials);
+      if (response.status === 200) {
+        let { data } = response.data;
+        let { userData, accessToken } = data;
+        let storedData = { userData, token: accessToken }
+        Storage.store("userData", userData);
+        Storage.store("token", accessToken);
+        return storedData;
+      } else {
+        return rejectWithValue(response.error);
+      }
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+export const register = createAsyncThunk(
+  "auth_slice/register",
+  async (credentials, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${BASE_URL}${REGISTER}`, credentials);
       if (response.status === 200) {
         let { data } = response.data;
         let { userData, accessToken } = data;
@@ -53,6 +74,20 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
+        state.loading = false;
+        state.userData = {};
+        state.error = action.payload.message;
+      })
+      .addCase(register.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userData = action.payload;
+        state.error = null;
+      })
+      .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.userData = {};
         state.error = action.payload.message;

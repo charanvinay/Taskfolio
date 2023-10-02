@@ -27,13 +27,13 @@ function App() {
     },
   ];
   const authentication = (path) => {
-    if (["/dashboard"].includes(path)) {
-      if (!isLoggedIn) {
-        navigate("/");
-      }
-    } else if (path === "/") {
+    if (path === "/") {
       if (isLoggedIn) {
         navigate("/dashboard");
+      } 
+    } else {
+      if (!isLoggedIn) {
+        navigate("/");
       }
     }
   };
@@ -44,7 +44,7 @@ function App() {
       "/dashboard": "Dashboard | Taskfolio",
     };
     document.title = titles[location.pathname] || "LetUsCook";
-  }, [isLoggedIn,location.pathname]);
+  }, [isLoggedIn]);
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

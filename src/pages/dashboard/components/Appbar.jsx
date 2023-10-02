@@ -68,6 +68,7 @@ function DashboardAppbar() {
                   sx={{
                     bgcolor: "rgba(255,255,255, 0.3)",
                     color: "whitesmoke",
+                    textTransform: "uppercase",
                   }}
                 >
                   {userData?.["fullName"] ? userData?.["fullName"][0] : "U"}

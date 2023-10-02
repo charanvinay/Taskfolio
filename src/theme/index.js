@@ -113,6 +113,13 @@ export const getTheme = (mode) => {
           },
         },
       },
+      MuiAutocomplete: {
+        styleOverrides: {
+          popper: {
+            boxShadow: "rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px !important", // Add your desired box shadow here
+          },
+        },
+      },
     },
   });
   theme = responsiveFontSizes(theme, {

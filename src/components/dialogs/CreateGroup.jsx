@@ -6,7 +6,7 @@ import {
   OutlinedInput,
   TextField,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -30,6 +30,7 @@ import ErrorAlert from "../snackbars/ErrorAlert";
 import ErrorButton from "../wrappers/ErrorButton";
 import PrimaryButton from "../wrappers/PrimaryButton";
 import SecondaryButton from "../wrappers/SecondaryButton";
+import Loader from "../../pages/dashboard/components/Loader";
 const { USER } = APIS;
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -39,7 +40,8 @@ export default function CreateGroup(props) {
   const { open, onClose, mode, groupId, isAdmin } = props;
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const [alertText, setAlertText] = useState("");
   const [errorAlert, setErrorAlert] = useState(false);
   const initialValues = { title: "", members: [] };
@@ -57,7 +59,7 @@ export default function CreateGroup(props) {
   );
 
   useEffect(() => {
-    setLoading(true);
+    setFetching(true);
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
@@ -72,8 +74,8 @@ export default function CreateGroup(props) {
   }, [searchValue]);
 
   useEffect(() => {
-    setLoading(true);
     if (groupId) {
+      setLoading(true);
       dispatch(fetchGroupDetails({ id: groupId })).then((res) => {
         if (res && res.payload && Object.keys(res.payload).length) {
           let { title, members } = res.payload;
@@ -94,9 +96,9 @@ export default function CreateGroup(props) {
             fetchMemberInfo();
           }
         }
+        setLoading(false);
       });
     }
-    setLoading(false);
   }, [groupId]);
 
   const API_fetchUsersById = async (id) => {
@@ -137,10 +139,10 @@ export default function CreateGroup(props) {
       } else {
         setUsers([]);
       }
-      setLoading(false);
+      setFetching(false);
     } catch (error) {
       setUsers([]);
-      setLoading(false);
+      setFetching(false);
       console.log(error);
     }
   };
@@ -234,7 +236,7 @@ export default function CreateGroup(props) {
           <Autocomplete
             multiple
             options={users}
-            loading={loading}
+            loading={fetching}
             getOptionLabel={(option) => option.fullName}
             filterSelectedOptions
             value={formValues.members}
@@ -261,7 +263,7 @@ export default function CreateGroup(props) {
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {loading ? (
+                      {fetching ? (
                         <CircularProgress color="inherit" size={20} />
                       ) : null}
                       {params.InputProps.endAdornment}
@@ -299,6 +301,7 @@ export default function CreateGroup(props) {
           text={alertText}
           onClose={() => setErrorAlert(false)}
         />
+        <Loader open={loading} />
       </Dialog>
     </>
   );

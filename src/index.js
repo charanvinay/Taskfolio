@@ -6,6 +6,7 @@ import App from "./App";
 import "./index.css";
 import { store } from "./redux/store";
 import reportWebVitals from "./reportWebVitals";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

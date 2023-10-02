@@ -58,6 +58,15 @@ export const getTheme = (mode) => {
         defaultProps: {
           size: "small",
         },
+        styleOverrides: {
+          root: {
+            '&:hover': {
+              '& fieldset': {
+                borderColor: '#ccc !important', // Set the border width to 1px on hover
+              },
+            },
+          },
+        },
       },
       MuiCard: {
         styleOverrides: {

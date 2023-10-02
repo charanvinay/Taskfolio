@@ -25,8 +25,10 @@ const PasswordFieldOutlined = (props) => {
         onChange={onChange}
         sx={{
           borderRadius: "8px",
-          paddingTop: "4px",
-          paddingBottom: "4px",
+          paddingTop: "2px",
+          paddingBottom: "2px",
+          fontSize: "14px",
+          outline: "none !important",
         }}
         endAdornment={
           <InputAdornment position="end">

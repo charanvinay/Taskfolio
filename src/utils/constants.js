@@ -1,3 +1,8 @@
+import Login from "../../src/Assets/login.png";
+import BoyWithTasks from "../../src/Assets/boywithtasks.png";
+import BoyWithPhone from "../../src/Assets/boyphone.png";
+import GroupTasks from "../../src/Assets/grouptasks.png";
+import ManWithPhone from "../../src/Assets/manwithphone.png";
 const constants = {
   BASE_URL: process.env.REACT_APP_BACKEND_URL,
   DEBOUNCE_DELAY: 300,
@@ -138,4 +143,37 @@ export const getTaskFormSchema = () => {
     },
   ];
 };
+
+export const CAROUSEL_ITEMS = [
+  {
+    id: 1,
+    alt: "Boy with laptop",
+    text: "Login with you credentials and track your tasks more effectively",
+    imageUrl: Login,
+  },
+  {
+    id: 2,
+    alt: "Boy with laptop in his hand showing tasks",
+    text: "Track Task Progress and Achievements",
+    imageUrl: BoyWithTasks,
+  },
+  {
+    id: 3,
+    alt: "Boy with phone",
+    text: "Manage tasks anywhere, anytime with responsive design",
+    imageUrl: BoyWithPhone,
+  },
+  {
+    id: 4,
+    alt: "Girl with phone",
+    text: "Collaborative Task Sharing for Teamwork",
+    imageUrl: GroupTasks,
+  },
+  {
+    id: 5,
+    alt: "Man with phone",
+    text: "Able to copy all the completed tasks and paste in emails ",
+    imageUrl: ManWithPhone,
+  },
+];
 export const { BASE_URL, DEBOUNCE_DELAY, DUMMY_AVATAR_URL } = constants;

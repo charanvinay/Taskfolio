@@ -10,6 +10,7 @@ export const APIS = {
   TASK: "task",
   GET_FORMNAMES: "task/getFormNames",
   LOGIN: "user/login",
+  REGISTER: "user/register",
   USER: "user",
   MEMBERS: "members",
 };

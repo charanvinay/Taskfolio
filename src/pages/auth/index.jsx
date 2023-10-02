@@ -1,9 +1,11 @@
 import { Grid } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import LeftBanners from "./components/LeftBanners";
 import Login from "./components/Login";
-
+import Register from "./components/Register";
 function Auth() {
+  const [signUp, setSignUp] = useState(false);
+  
   return (
     <Grid
       container
@@ -14,7 +16,11 @@ function Auth() {
       }}
     >
       <LeftBanners />
-      <Login />
+      {signUp ? (
+        <Register setSignUp={setSignUp} />
+      ) : (
+        <Login setSignUp={setSignUp} />
+      )}
     </Grid>
   );
 }

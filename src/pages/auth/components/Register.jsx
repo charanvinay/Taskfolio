@@ -7,15 +7,15 @@ import TextFieldOutlined from "../../../components/TextFieldOutlined";
 import ErrorAlert from "../../../components/snackbars/ErrorAlert";
 import { CursiveTextLG } from "../../../components/wrappers/CursiveTextLG";
 import PrimaryButton from "../../../components/wrappers/PrimaryButton";
-import { getAuthData, login, logout } from "../../../redux/slices/authSlice";
-import Loader from "../../dashboard/components/Loader";
-import Storage from "../../../utils/localStore";
+import { getAuthData, logout, register } from "../../../redux/slices/authSlice";
 import { resetAll } from "../../../redux/slices/rootReducer";
-const Login = (props) => {
+import Storage from "../../../utils/localStore";
+import Loader from "../../dashboard/components/Loader";
+const Register = (props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const initialValues = { email: "", password: "" };
+  const initialValues = { email: "", fullName: "", password: "" };
   const [errorText, setErrorText] = useState(false);
   const [snackopen, setsnackOpen] = useState(false);
   const [formValues, setformValues] = useState(initialValues);
@@ -48,20 +48,16 @@ const Login = (props) => {
       setErrorText(Object.values(handleValidation(formValues))[0]);
       setsnackOpen(true);
     } else {
-      dispatch(login(formValues));
-      //   navigate(`/`);
+      dispatch(register(formValues));
     }
   };
-  const handleSignUp = (e) => {
-    props.setSignUp(true);
-  };
-  const handleForgot = (e) => {
-    navigate("/Forgotpassword");
-  };
-
+  const handleSignUp = (e) => props.setSignUp(false);
   const handleValidation = (values) => {
     const errors = {};
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    if (!values.fullName) {
+      errors.fullName = "Full name is required";
+    }
     if (!values.email) {
       errors.email = "Email is required!";
     } else if (!regex.test(values.email)) {
@@ -95,7 +91,7 @@ const Login = (props) => {
       >
         <Container maxWidth="xs">
           <Box>
-            <CursiveTextLG variant="h4">Welcome back</CursiveTextLG>
+            <CursiveTextLG variant="h4">Get Started</CursiveTextLG>
             <Typography
               variant="subtitle2"
               sx={{
@@ -103,9 +99,15 @@ const Login = (props) => {
                 fontSize: "13px",
               }}
             >
-              Enter your credentials to access your account
+              Enter your credentials to create your account
             </Typography>
             <Box sx={{ height: "40px" }}></Box>
+            <TextFieldOutlined
+              label="Full name"
+              name="fullName"
+              value={formValues.fullName}
+              onChange={handleChanges}
+            />
             <TextFieldOutlined
               label="Email"
               name="email"
@@ -118,19 +120,16 @@ const Login = (props) => {
               value={formValues.password}
               onChange={handleChanges}
             />
-            <Box sx={{ display: "flex", justifyContent: "end", mt: 1 }}>
-              <Button onClick={handleForgot}>Forgot Password?</Button>
-            </Box>
             <PrimaryButton
               variant="contained"
               fullWidth={true}
               onClick={handleSubmit}
               sx={{ margin: "20px 0px 10px 0px" }}
             >
-              Login
+              Create account
             </PrimaryButton>
             <Button fullWidth={true} onClick={handleSignUp}>
-              Don't have an account?
+              Already have an account?
             </Button>
           </Box>
         </Container>
@@ -141,4 +140,4 @@ const Login = (props) => {
   );
 };
 
-export default Login;
+export default Register;

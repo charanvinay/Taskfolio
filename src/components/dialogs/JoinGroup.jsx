@@ -47,6 +47,7 @@ export default function JoinGroup(props) {
   );
   let debounceTimer;
   useEffect(() => {
+    setLoading(true);
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
@@ -65,7 +66,6 @@ export default function JoinGroup(props) {
     if (title) {
       url = `${GROUP}?title=${title}`;
     }
-    setLoading(true);
     try {
       const { status, data } = await callApi(url);
       if (status) {

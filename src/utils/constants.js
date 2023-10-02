@@ -88,4 +88,54 @@ export const DARKCOLORS = {
   z: "#0288D1", // Dark blue
 };
 
+export const getTaskFormSchema = () => {
+  return [
+    {
+      id: 1,
+      name: "groupId",
+      label: "Group",
+      element: "dropdown",
+      freeSolo: false,
+      value: null,
+      placeholder: "Select a group",
+    },
+    {
+      id: 2,
+      name: "formName",
+      label: "Form/Module/Page name",
+      element: "dropdown",
+      freeSolo: true,
+      value: null,
+      placeholder: "Eg: Doctor Assessment",
+      options: [],
+    },
+    {
+      id: 3,
+      name: "type",
+      label: "Type",
+      element: "radio",
+      value: TASKTYPES[0]["id"],
+      options: TASKTYPES,
+      colors: TASKTYPECOLORS,
+    },
+    {
+      id: 5,
+      name: "status",
+      label: "Status",
+      element: "radio",
+      value: TASK_STATUSES[0]["id"],
+      options: TASK_STATUSES,
+      colors: TASK_STATUS_COLORS,
+    },
+    {
+      id: 4,
+      name: "title",
+      label: "What have you done?",
+      element: "input",
+      value: null,
+      multiline: true,
+      placeholder: "Eg: Developed a user interface for billing form...",
+    },
+  ];
+};
 export const { BASE_URL, DEBOUNCE_DELAY, DUMMY_AVATAR_URL } = constants;

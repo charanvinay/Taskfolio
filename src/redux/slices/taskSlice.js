@@ -1,66 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import moment from "moment";
 import callApi from "../../api";
 import {
   APIS,
-  TASKTYPECOLORS,
-  TASKTYPES,
-  TASK_STATUSES,
-  TASK_STATUS_COLORS,
+  getTaskFormSchema
 } from "../../utils/constants";
-import moment from "moment";
 const { TASK, GET_FORMNAMES } = APIS;
 const initialState = {
   tasks: [],
   formNames: [],
   loading: false,
-  formSchema: [
-    {
-      id: 1,
-      name: "groupId",
-      label: "Group",
-      element: "dropdown",
-      freeSolo: false,
-      value: null,
-      placeholder: "Select a group",
-    },
-    {
-      id: 2,
-      name: "formName",
-      label: "Form/Module/Page name",
-      element: "dropdown",
-      freeSolo: true,
-      value: null,
-      placeholder: "Eg: Doctor Assessment",
-      options: [],
-    },
-    {
-      id: 3,
-      name: "type",
-      label: "Type",
-      element: "radio",
-      value: TASKTYPES[0]["id"],
-      options: TASKTYPES,
-      colors: TASKTYPECOLORS,
-    },
-    {
-      id: 5,
-      name: "status",
-      label: "Status",
-      element: "radio",
-      value: TASK_STATUSES[0]["id"],
-      options: TASK_STATUSES,
-      colors: TASK_STATUS_COLORS,
-    },
-    {
-      id: 4,
-      name: "title",
-      label: "What have you done?",
-      element: "input",
-      value: null,
-      multiline: true,
-      placeholder: "Eg: Developed a user interface for billing form...",
-    },
-  ],
+  formSchema: getTaskFormSchema(),
   error: false,
   message: "",
   selectedStatus: "",

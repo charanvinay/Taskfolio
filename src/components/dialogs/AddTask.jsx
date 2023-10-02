@@ -4,6 +4,7 @@ import {
   Chip,
   Grid,
   OutlinedInput,
+  Stack,
   TextField,
   Typography,
   useMediaQuery,
@@ -26,7 +27,7 @@ import {
   updateTask,
 } from "../../redux/slices/taskSlice";
 import { getUserData } from "../../redux/slices/userSlice";
-import { COLORS } from "../../utils/constants";
+import { COLORS, getTaskFormSchema } from "../../utils/constants";
 import Storage from "../../utils/localStore";
 import ErrorAlert from "../snackbars/ErrorAlert";
 import SuccessAlert from "../snackbars/SuccessAlert";
@@ -75,6 +76,14 @@ export default function AddTask(props) {
           dispatch(fetchFormNames({ groupId: val }));
         }
         dispatch(handleTask({ name: field.name, value: val }));
+      });
+    } else {
+      formSchema.map((field) => {
+        let schema = getTaskFormSchema();
+        let isExisits = schema.find((e) => e.name === field.name);
+        if (isExisits) {
+          dispatch(handleTask({ name: field.name, value: isExisits["value"] }));
+        }
       });
     }
   }, [selectedTask]);
@@ -253,26 +262,39 @@ export default function AddTask(props) {
               })}
           </Grid>
         </DialogContent>
-        <DialogActions
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {selectedTask && (
-            <ErrorButton
+        <DialogActions>
+          <Stack
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "10px",
+              flexDirection: isTabletOrMobile ? "column-reverse" : "row",
+            }}
+          >
+            {selectedTask && (
+              <ErrorButton
+                variant="contained"
+                color="error"
+                onClick={handleDeleteTask}
+                fullWidth={isTabletOrMobile}
+              >
+                Delete
+              </ErrorButton>
+            )}
+            <SecondaryButton onClick={onClose} fullWidth={isTabletOrMobile}>
+              Cancel
+            </SecondaryButton>
+            <PrimaryButton
               variant="contained"
-              color="error"
-              onClick={handleDeleteTask}
+              onClick={submit}
+              fullWidth={isTabletOrMobile}
             >
-              Delete
-            </ErrorButton>
-          )}
-          <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
-          <PrimaryButton variant="contained" onClick={submit}>
-            {selectedTask ? "Update" : "Save"}
-          </PrimaryButton>
+              {selectedTask ? "Update" : "Save"}
+            </PrimaryButton>
+          </Stack>
         </DialogActions>
       </Dialog>
       <SuccessAlert

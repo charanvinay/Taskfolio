@@ -131,17 +131,19 @@ const Tasks = () => {
               {activeGroupData["_id"] &&
                 ` tasks in ${activeGroupData?.["title"]}`}
             </TextStripes>
-            {activeGroupData["_id"] && <Tooltip
-              title={`Copy ${
-                TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
-                "All"
-              } tasks`}
-              placement="bottom"
-            >
-              <IconButton onClick={copyList}>
-                <ContentCopyOutlined sx={{ fontSize: "18px" }} />
-              </IconButton>
-            </Tooltip>}
+            {activeGroupData["_id"] && (
+              <Tooltip
+                title={`Copy ${
+                  TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
+                  "All"
+                } tasks`}
+                placement="bottom"
+              >
+                <IconButton onClick={copyList}>
+                  <ContentCopyOutlined sx={{ fontSize: "18px" }} />
+                </IconButton>
+              </Tooltip>
+            )}
           </Stack>
           {activeMember && (
             <>
@@ -178,7 +180,9 @@ const Tasks = () => {
               tasks.length > 0 &&
               tasks.map((task) => {
                 const clickable =
-                  task["createdBy"] === userData["_id"] && activeDate;
+                  [task["createdBy"], task["assignedTo"]].includes(
+                    userData["_id"]
+                  ) && activeDate;
                 return (
                   <Paper
                     key={task._id}
@@ -222,7 +226,7 @@ const Tasks = () => {
                       sx={{ mt: "4px" }}
                     >
                       <Typography variant="caption">
-                        In {task.formName}
+                        In {task.formName} by {task["createdBy"] === userData["_id"] ? "you" : task?.["createdByData"]?.["fullName"]}
                         {activeWeek
                           ? " on " + moment(task.date).format("DD-MM-YYYY")
                           : " @ " + moment(task.createdAt).format("hh:mm a")}

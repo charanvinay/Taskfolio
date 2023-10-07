@@ -35,7 +35,7 @@ export const fetchTasks = createAsyncThunk(
         url = `${TASK}?groupId=${activeGroup}&from=${from}&to=${to}`;
       }
       if (uid) {
-        url += `&createdBy=${uid}`;
+        url += `&assignedTo=${uid}`;
       }
       if (selectedStatus) {
         url += `&status=${selectedStatus}`;
@@ -83,6 +83,7 @@ export const addTask = createAsyncThunk(
           fetchTasks({
             activeDate: payload["date"],
             activeGroup: payload["groupId"],
+            uid: payload["assignedTo"],
             selectedStatus: payload["status"],
           })
         );
@@ -116,6 +117,7 @@ export const updateTask = createAsyncThunk(
           fetchTasks({
             activeDate: payload["date"],
             activeGroup: payload["groupId"],
+            uid: payload["assignedTo"],
             selectedStatus: payload["status"],
           })
         );
@@ -149,6 +151,7 @@ export const deleteTask = createAsyncThunk(
           fetchTasks({
             activeDate: date,
             activeGroup: groupId,
+            uid: payload["assignedTo"],
             selectedStatus: payload["status"],
           })
         );
@@ -175,6 +178,14 @@ const taskSlice = createSlice({
       state.formSchema.map((field) => {
         if (field.name === action.payload.name) {
           field.value = action.payload.value;
+        }
+        return field;
+      });
+    },
+    handleTaskByKey: (state, action) => {
+      state.formSchema.map((field) => {
+        if (field.name === action.payload.name) {
+          field[action.payload.key] = action.payload.value;
         }
         return field;
       });
@@ -265,5 +276,5 @@ const taskSlice = createSlice({
 });
 
 export const getTaskData = (state, key) => state.task[key];
-export const { handleTask, setSelectedStatus, resetTask } = taskSlice.actions;
+export const { handleTask, handleTaskByKey, setSelectedStatus, resetTask } = taskSlice.actions;
 export default taskSlice.reducer;

@@ -23,18 +23,20 @@ import {
   deleteTask,
   fetchFormNames,
   getTaskData,
+  handleTaskByKey,
   handleTask,
   updateTask,
 } from "../../redux/slices/taskSlice";
 import { getUserData } from "../../redux/slices/userSlice";
-import { COLORS, getTaskFormSchema } from "../../utils/constants";
+import { APIS, COLORS, getTaskFormSchema } from "../../utils/constants";
 import Storage from "../../utils/localStore";
 import ErrorAlert from "../snackbars/ErrorAlert";
 import SuccessAlert from "../snackbars/SuccessAlert";
 import ErrorButton from "../wrappers/ErrorButton";
 import PrimaryButton from "../wrappers/PrimaryButton";
 import SecondaryButton from "../wrappers/SecondaryButton";
-
+import callApi from "../../api";
+const { MEMBERS } = APIS;
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -74,6 +76,8 @@ export default function AddTask(props) {
         let val = selectedTask[field.name];
         if (field.name === "groupId") {
           dispatch(fetchFormNames({ groupId: val }));
+        } else if (field.name === "assignedTo" && selectedTask["groupId"]) {
+          fetchMembers(selectedTask["groupId"]);
         }
         dispatch(handleTask({ name: field.name, value: val }));
       });
@@ -91,11 +95,43 @@ export default function AddTask(props) {
   const getOptions = (name) => {
     if (name === "groupId") {
       return groups.map((option) => option.title);
+    } else if (name === "assignedTo") {
+      let options = [];
+      formSchema.map((field) => {
+        if (field.name === name && field.options && field.options.length) {
+          options = field.options.map((m) => m.fullName);
+        }
+      });
+      return options;
+    }
+  };
+  const fetchMembers = async (id) => {
+    try {
+      const { status, data } = await callApi(`group/${id}/${MEMBERS}`);
+      if (status) {
+        dispatch(
+          handleTaskByKey({
+            name: "assignedTo",
+            key: "options",
+            value: data.data,
+          })
+        );
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   const getDropdownValue = (name, value) => {
     if (name === "groupId") {
       return groups.find((option) => option._id === value)?.title;
+    } else if (name === "assignedTo") {
+      let title = "";
+      formSchema.map((field) => {
+        if (field.name === name && field.options && field.options.length) {
+          title = field.options.find((m) => m._id === value)?.fullName;
+        }
+      });
+      return title;
     }
     return value;
   };
@@ -119,13 +155,13 @@ export default function AddTask(props) {
       formSchema.forEach((field) => {
         payload[field.name] = field.value;
       });
+      dispatch(setActiveMember(payload["assignedTo"]));
       if (selectedTask) {
         payload["_id"] = selectedTask["_id"];
         dispatch(updateTask({ payload }));
       } else {
         dispatch(addTask({ payload }));
       }
-      dispatch(setActiveMember(userData["_id"]));
       onClose({ openGroup: payload["groupId"] });
     } else {
       setErrorAlert(true);
@@ -198,7 +234,7 @@ export default function AddTask(props) {
                   );
                 } else if (element === "dropdown") {
                   return (
-                    <Grid item xs={12} sm={12} md={6} lg={6} key={name}>
+                    <Grid item xs={12} sm={12} md={4} lg={4} key={name}>
                       <Typography variant="subtitle2">{label}</Typography>
                       <Autocomplete
                         key={name}
@@ -213,6 +249,18 @@ export default function AddTask(props) {
                           if (name === "groupId") {
                             val = groups.find((g) => g.title === inpVal)?._id;
                             dispatch(fetchFormNames({ groupId: val }));
+                            dispatch(
+                              handleTask({ name: "assignedTo", value: null })
+                            );
+                            fetchMembers(val);
+                          } else if (name === "assignedTo") {
+                            formSchema.map((field) => {
+                              if (field.name === name) {
+                                val = field.options.find(
+                                  (m) => m.fullName === inpVal
+                                )._id;
+                              }
+                            });
                           }
                           dispatch(handleTask({ name, value: val }));
                         }}
@@ -259,7 +307,7 @@ export default function AddTask(props) {
                     </Grid>
                   );
                 }
-                return null
+                return null;
               })}
           </Grid>
         </DialogContent>

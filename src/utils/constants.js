@@ -105,6 +105,16 @@ export const getTaskFormSchema = () => {
       placeholder: "Select a group",
     },
     {
+      id: 6,
+      name: "assignedTo",
+      label: "Assign To",
+      element: "dropdown",
+      freeSolo: false,
+      value: null,
+      placeholder: "Select a member",
+      options: [],
+    },
+    {
       id: 2,
       name: "formName",
       label: "Form/Module/Page name",

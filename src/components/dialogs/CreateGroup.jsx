@@ -155,9 +155,10 @@ export default function CreateGroup(props) {
   const validation = () => {
     if (!formValues.title) {
       return { valid: false, message: "Please enter a valid title" };
-    } else if (!formValues.members || formValues.members.length === 0) {
-      return { valid: false, message: "Please select atleast one user" };
-    }
+    } 
+    // else if (!formValues.members || formValues.members.length === 0) {
+    //   return { valid: false, message: "Please select atleast one user" };
+    // }
     return { valid: true };
   };
   const submit = () => {

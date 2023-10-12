@@ -149,7 +149,7 @@ export const getTaskFormSchema = () => {
       element: "input",
       value: null,
       multiline: true,
-      placeholder: "Eg: Developed a user interface for billing form...",
+      placeholder: "Eg: [BUG 1148] Developed a user interface for billing form...",
     },
   ];
 };

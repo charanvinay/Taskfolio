@@ -3,7 +3,8 @@ import axios from "axios";
 import { APIS } from "../../utils/constants";
 import Storage from "../../utils/localStore";
 import { BASE_URL } from "../../utils/constants";
-const { LOGIN, REGISTER } = APIS;
+import callApi from "../../api";
+const { LOGIN, REGISTER, USER } = APIS;
 const initialState = {
   userData: {},
   error: null,
@@ -51,6 +52,35 @@ export const register = createAsyncThunk(
     }
   }
 );
+export const updateUser = createAsyncThunk(
+  "auth_slice/updateUser",
+  async (payload, { rejectWithValue, dispatch }) => {
+    // console.log(payload);
+    try {
+      const { status, data } = await callApi(
+        `${USER}/${payload["_id"]}`,
+        "PUT",
+        payload
+      );
+      if (status) {
+        let { data: userData } = data;
+        Storage.store("userData", userData);
+        return {
+          status,
+          data: userData,
+          message: data.message,
+        };
+      }
+      return rejectWithValue({
+        status,
+        message: data.message,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
 const authSlice = createSlice({
   name: "auth_slice",
   initialState: initialState,
@@ -89,6 +119,17 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
+        state.userData = {};
+        state.error = action.payload.message;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.userData = action.payload.data;
+        state.error = null;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
         state.userData = {};
         state.error = action.payload.message;
       });

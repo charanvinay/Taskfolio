@@ -40,7 +40,7 @@ export const TASKTYPES = [
   { id: "enhancement", label: "Enhancement", color: "green" },
   { id: "testing", label: "Testing", color: "purple" },
   { id: "deployment", label: "Deployment", color: "teal" },
-  { id: "code_optimization", label: "Code Optimization", color: "orange" },
+  { id: "code_optimization", label: "Code Optimization", color: "#FF6F00" },
 ];
 
 export const TASKTYPECOLORS = TASKTYPES.reduce((acc, curr) => {
@@ -49,8 +49,8 @@ export const TASKTYPECOLORS = TASKTYPES.reduce((acc, curr) => {
 }, {});
 
 export const TASK_STATUSES = [
-  { id: "not_started", label: "Not Started", color: "grey" },
-  { id: "wip", label: "Work in progress", color: "orange" },
+  { id: "not_started", label: "Not Started", color: "#607D8B" },
+  { id: "wip", label: "Work in progress", color: "#FF6F00" },
   { id: "completed", label: "Completed", color: "green" },
   { id: "need_clarity", label: "Need clarity", color: "red" },
   { id: "hold", label: "On Hold", color: "black" },

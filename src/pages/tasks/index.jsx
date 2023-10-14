@@ -1,4 +1,4 @@
-import { ContentCopyOutlined } from "@mui/icons-material";
+import { ContentCopyOutlined, TimerOutlined } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import {
@@ -37,7 +37,7 @@ import {
   TASKTYPECOLORS,
   TASKTYPES,
   TASK_STATUSES,
-  TASK_STATUS_COLORS
+  TASK_STATUS_COLORS,
 } from "../../utils/constants";
 import Storage from "../../utils/localStore";
 import TaskSkeleton from "../../utils/skeletons/Task";
@@ -117,7 +117,7 @@ const Tasks = () => {
   const copyList = (prefix) => {
     const text = tasks
       .map((task) => {
-        let label = TASKTYPES.find(t=>t.id === task.type)?.label || "";
+        let label = TASKTYPES.find((t) => t.id === task.type)?.label || "";
         if (prefix === "dot") {
           return `•  ${task.title}`;
         } else if (prefix === "dot-type") {
@@ -163,16 +163,11 @@ const Tasks = () => {
                   } tasks`}
                   placement="bottom"
                 >
-                  <Button
-                    onClick={()=>copyList(userData["copyStyle"])}
-                  >
+                  <Button onClick={() => copyList(userData["copyStyle"])}>
                     <ContentCopyOutlined sx={{ fontSize: "18px" }} />
                   </Button>
                 </Tooltip>
-                <Button
-                  size="small"
-                  onClick={() => setCopySettingModal(true)}
-                >
+                <Button size="small" onClick={() => setCopySettingModal(true)}>
                   <ArrowDropDownIcon />
                 </Button>
               </ButtonGroup>
@@ -216,6 +211,10 @@ const Tasks = () => {
                   [task["createdBy"], task["assignedTo"]].includes(
                     userData["_id"]
                   ) && activeDate;
+                let created = moment(task.createdAt).format("hh:mm a");
+                let updated = moment(task.updatedAt).format("hh:mm a");
+                let time =
+                  created === updated ? created : created + " | " + updated;
                 return (
                   <Paper
                     key={task._id}
@@ -236,6 +235,20 @@ const Tasks = () => {
                       }
                     }}
                   >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "5px",
+                      }}
+                    >
+                      <TimerOutlined sx={{ fontSize: "13px" }} />
+                      {activeWeek
+                        ? moment(task.date).format("DD-MM-YYYY")
+                        : time}
+                    </Typography>
                     <Stack
                       direction="row"
                       alignItems="center"
@@ -263,9 +276,6 @@ const Tasks = () => {
                         {task["createdBy"] === userData["_id"]
                           ? "you"
                           : task?.["createdByData"]?.["fullName"]}
-                        {activeWeek
-                          ? " on " + moment(task.date).format("DD-MM-YYYY")
-                          : " @ " + moment(task.createdAt).format("hh:mm a")}
                       </Typography>
                       <Stack direction="row" alignItems="center" spacing={1}>
                         <Box

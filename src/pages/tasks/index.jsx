@@ -1,7 +1,10 @@
 import { ContentCopyOutlined } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import {
   Box,
+  Button,
+  ButtonGroup,
   Chip,
   Fab,
   IconButton,
@@ -17,8 +20,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import NotFound from "../../components/PageNotFound";
 import AddTask from "../../components/dialogs/AddTask";
+import CopySettings from "../../components/dialogs/CopySettings";
 import ErrorAlert from "../../components/snackbars/ErrorAlert";
 import SuccessAlert from "../../components/snackbars/SuccessAlert";
+import { HorizontalScroll } from "../../components/wrappers/HorizontalScroll";
+import { TextStripes } from "../../components/wrappers/TextStripes";
 import { getGroupData, setActiveGroup } from "../../redux/slices/groupSlice";
 import {
   fetchTasks,
@@ -31,18 +37,18 @@ import {
   TASKTYPECOLORS,
   TASKTYPES,
   TASK_STATUSES,
-  TASK_STATUS_COLORS,
+  TASK_STATUS_COLORS
 } from "../../utils/constants";
 import Storage from "../../utils/localStore";
 import TaskSkeleton from "../../utils/skeletons/Task";
-import { HorizontalScroll } from "../../components/wrappers/HorizontalScroll";
-import { TextStripes } from "../../components/wrappers/TextStripes";
+
 const Tasks = () => {
-  const [openAddTask, setOpenAddTask] = useState(false);
   const [alertText, setAlertText] = useState("");
   const [errorAlert, setErrorAlert] = useState(false);
+  const [openAddTask, setOpenAddTask] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [successAlert, setSuccessAlert] = useState(false);
+  const [copySettingModal, setCopySettingModal] = useState(false);
   const userData = Storage.getJson("userData");
   const activeDate = useSelector((state) => getUserData(state, "activeDate"));
   const activeWeek = useSelector((state) => getUserData(state, "activeWeek"));
@@ -108,8 +114,20 @@ const Tasks = () => {
       setAlertText("Failed to copy!");
     }
   };
-  const copyList = () => {
-    const text = tasks.map((task) => ` •  ${task.title}`).join("\n");
+  const copyList = (prefix) => {
+    const text = tasks
+      .map((task) => {
+        let label = TASKTYPES.find(t=>t.id === task.type)?.label || "";
+        if (prefix === "dot") {
+          return `•  ${task.title}`;
+        } else if (prefix === "dot-type") {
+          return `•  [${label}] ${task.title}`;
+        } else if (prefix === "type") {
+          return `[${label}] ${task.title}`;
+        }
+        return task.title;
+      })
+      .join("\n");
     console.log(text);
     copyToClipBoard(text);
   };
@@ -132,17 +150,32 @@ const Tasks = () => {
                 ` tasks in ${activeGroupData?.["title"]}`}
             </TextStripes>
             {activeGroupData["_id"] && (
-              <Tooltip
-                title={`Copy ${
-                  TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
-                  "All"
-                } tasks`}
-                placement="bottom"
+              <ButtonGroup
+                sx={{
+                  borderColor: "#607D8B !important",
+                }}
+                disableElevation
               >
-                <IconButton onClick={copyList}>
-                  <ContentCopyOutlined sx={{ fontSize: "18px" }} />
-                </IconButton>
-              </Tooltip>
+                <Tooltip
+                  title={`Copy ${
+                    TASK_STATUSES.find((s) => s.id === selectedStatus)?.label ||
+                    "All"
+                  } tasks`}
+                  placement="bottom"
+                >
+                  <Button
+                    onClick={()=>copyList(userData["copyStyle"])}
+                  >
+                    <ContentCopyOutlined sx={{ fontSize: "18px" }} />
+                  </Button>
+                </Tooltip>
+                <Button
+                  size="small"
+                  onClick={() => setCopySettingModal(true)}
+                >
+                  <ArrowDropDownIcon />
+                </Button>
+              </ButtonGroup>
             )}
           </Stack>
           {activeMember && (
@@ -226,7 +259,10 @@ const Tasks = () => {
                       sx={{ mt: "4px" }}
                     >
                       <Typography variant="caption">
-                        In {task.formName} by {task["createdBy"] === userData["_id"] ? "you" : task?.["createdByData"]?.["fullName"]}
+                        In {task.formName} by{" "}
+                        {task["createdBy"] === userData["_id"]
+                          ? "you"
+                          : task?.["createdByData"]?.["fullName"]}
                         {activeWeek
                           ? " on " + moment(task.date).format("DD-MM-YYYY")
                           : " @ " + moment(task.createdAt).format("hh:mm a")}
@@ -305,6 +341,13 @@ const Tasks = () => {
               dispatch(setActiveGroup(e.openGroup));
             }
           }}
+        />
+      )}
+      {copySettingModal && (
+        <CopySettings
+          open={copySettingModal}
+          onClose={() => setCopySettingModal(false)}
+          onSubmit={(e) => copyList(e)}
         />
       )}
       <SuccessAlert

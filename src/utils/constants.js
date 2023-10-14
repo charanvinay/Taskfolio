@@ -186,4 +186,11 @@ export const CAROUSEL_ITEMS = [
     imageUrl: ManWithPhone,
   },
 ];
+
+export const COPY_STYLES =[
+  {id: 1, name: "none", label: "Plain text"},
+  {id: 2, name: "dot", label:"List items"},
+  {id: 3, name: "type", label: "Task type only"},
+  {id: 4, name: "dot-type", label: "List item with Task type"},
+]
 export const { BASE_URL, DEBOUNCE_DELAY, DUMMY_AVATAR_URL } = constants;

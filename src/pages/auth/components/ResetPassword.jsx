@@ -119,7 +119,6 @@ const ResetPassword = (props) => {
       >
         {invalidLink ? (
           <Box>
-            <Button sx={{ ml: 2 }} onClick={gotoLogin}>{`< Login`}</Button>
             <img
               src={UnAuthorized}
               alt="UnAuthorized"
@@ -127,6 +126,7 @@ const ResetPassword = (props) => {
                 width: "100%",
               }}
             />
+              <Button fullWidth={true} onClick={gotoLogin}>Go back</Button>
           </Box>
         ) : (
           <Container maxWidth="xs">

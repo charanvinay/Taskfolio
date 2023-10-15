@@ -22,6 +22,10 @@ function App() {
       element: <Auth />,
     },
     {
+      path: "/api/v1/resetPassword/:id/:token",
+      element: <Auth />,
+    },
+    {
       path: "*",
       element: <p>Page Not Found</p>,
     },
@@ -33,7 +37,9 @@ function App() {
       } 
     } else {
       if (!isLoggedIn) {
-        navigate("/");
+        if(!location.pathname.includes("/resetPassword")) {
+          navigate("/");
+        }
       }
     }
   };
@@ -43,7 +49,7 @@ function App() {
       "/": "Login | Taskfolio",
       "/dashboard": "Dashboard | Taskfolio",
     };
-    document.title = titles[location.pathname] || "LetUsCook";
+    document.title = titles[location.pathname] || "Taskfolio";
   }, [isLoggedIn]);
   return (
     <ThemeProvider theme={theme}>

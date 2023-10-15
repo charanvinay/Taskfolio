@@ -51,7 +51,7 @@ const Register = (props) => {
       dispatch(register(formValues));
     }
   };
-  const handleSignUp = (e) => props.setSignUp(false);
+  const handleSignUp = (e) => props.authType("login");
   const handleValidation = (values) => {
     const errors = {};
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
@@ -65,8 +65,8 @@ const Register = (props) => {
     }
     if (!values.password) {
       errors.password = "Password is required";
-    } else if (values.password.length < 2) {
-      errors.password = "Password must be more than 2 characters";
+    } else if (values.password.length < 6) {
+      errors.password = "Password must be more than 6 characters";
     }
     return errors;
   };

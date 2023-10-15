@@ -52,12 +52,8 @@ const Login = (props) => {
       //   navigate(`/`);
     }
   };
-  const handleSignUp = (e) => {
-    props.setSignUp(true);
-  };
-  const handleForgot = (e) => {
-    navigate("/Forgotpassword");
-  };
+  const handleSignUp = (e) => props.authType("register");
+  const handleForgot = (e) => props.authType("forgot-password");
 
   const handleValidation = (values) => {
     const errors = {};
@@ -69,8 +65,8 @@ const Login = (props) => {
     }
     if (!values.password) {
       errors.password = "Password is required";
-    } else if (values.password.length < 2) {
-      errors.password = "Password must be more than 2 characters";
+    } else if (values.password.length < 6) {
+      errors.password = "Password must be more than 6 characters";
     }
     return errors;
   };

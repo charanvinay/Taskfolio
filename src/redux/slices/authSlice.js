@@ -1,10 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { APIS } from "../../utils/constants";
-import Storage from "../../utils/localStore";
-import { BASE_URL } from "../../utils/constants";
 import callApi from "../../api";
-const { LOGIN, REGISTER, USER } = APIS;
+import { APIS, BASE_URL } from "../../utils/constants";
+import Storage from "../../utils/localStore";
+const { LOGIN, REGISTER, USER, FORGOT_PASSWORD, RESET_PASSWORD } = APIS;
 const initialState = {
   userData: {},
   error: null,
@@ -18,10 +17,52 @@ export const login = createAsyncThunk(
       if (response.status === 200) {
         let { data } = response.data;
         let { userData, accessToken } = data;
-        let storedData = { userData, token: accessToken }
+        let storedData = { userData, token: accessToken };
         Storage.store("userData", userData);
         Storage.store("token", accessToken);
         return storedData;
+      } else {
+        return rejectWithValue(response.error);
+      }
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+export const forgotPassword = createAsyncThunk(
+  "auth_slice/forgotPassword",
+  async (credentials, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}${FORGOT_PASSWORD}`,
+        credentials
+      );
+      if (response.status === 200) {
+        let { message } = response.data;
+        return message;
+      } else {
+        return rejectWithValue(response.error);
+      }
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+export const resetPassword = createAsyncThunk(
+  "auth_slice/resetPassword",
+  async (credentials, { rejectWithValue }) => {
+    console.log(credentials);
+    try {
+      let { id, token, password } = credentials;
+      const response = await axios.post(
+        `${BASE_URL}${RESET_PASSWORD}/${id}/${token}`,
+        { password }
+      );
+      if (response.status === 200) {
+        let { message } = response.data;
+        return message;
       } else {
         return rejectWithValue(response.error);
       }
@@ -39,7 +80,7 @@ export const register = createAsyncThunk(
       if (response.status === 200) {
         let { data } = response.data;
         let { userData, accessToken } = data;
-        let storedData = { userData, token: accessToken }
+        let storedData = { userData, token: accessToken };
         Storage.store("userData", userData);
         Storage.store("token", accessToken);
         return storedData;
@@ -85,11 +126,11 @@ const authSlice = createSlice({
   name: "auth_slice",
   initialState: initialState,
   reducers: {
-    logout: (state, action)=>{
-        state.userData = {}
-        Storage.remove("token");
-        Storage.remove("userData");
-    }, 
+    logout: (state, action) => {
+      state.userData = {};
+      Storage.remove("token");
+      Storage.remove("userData");
+    },
     resetAuth: (state) => initialState,
   },
   extraReducers: (builder) => {
@@ -104,6 +145,32 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
+        state.loading = false;
+        state.userData = {};
+        state.error = action.payload.message;
+      })
+      .addCase(forgotPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.userData = {};
+        state.error = action.payload.message;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
         state.userData = {};
         state.error = action.payload.message;
@@ -136,5 +203,5 @@ const authSlice = createSlice({
   },
 });
 export const getAuthData = (state, key) => state.auth[key];
-export const {logout, resetAuth} = authSlice.actions;
+export const { logout, resetAuth } = authSlice.actions;
 export default authSlice.reducer;

@@ -16,6 +16,8 @@ export const APIS = {
   GET_FORMNAMES: "task/getFormNames",
   LOGIN: "user/login",
   REGISTER: "user/register",
+  FORGOT_PASSWORD: "user/forgotPassword",
+  RESET_PASSWORD: "user/resetPassword",
   USER: "user",
   MEMBERS: "members",
 };
